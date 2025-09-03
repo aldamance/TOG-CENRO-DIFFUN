@@ -313,17 +313,6 @@
                             <input type="text" id="searchBox" onkeyup="filterHistoryTable()" placeholder="Search..." class="form-control form-control-sm">
                         </div>
                     </div>
-                    <div class="d-flex align-items-center mb-2 gap-2 flex-wrap">
-                        <div class="input-group input-group-sm" style="max-width: 250px;">
-                            <span class="input-group-text">From</span>
-                            <input type="date" id="dateFilterFrom" class="form-control" onchange="filterHistoryTable()">
-                        </div>
-                        <div class="input-group input-group-sm" style="max-width: 250px;">
-                            <span class="input-group-text">To</span>
-                            <input type="date" id="dateFilterTo" class="form-control" onchange="filterHistoryTable()">
-                        </div>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="clearDateFilter()">Clear Dates</button>
-                    </div>
                     <div class="table-responsive rounded-3 position-relative">
                         <table id="historyTable" class="table table-hover mb-0">
                             <thead class="table-header">
@@ -361,14 +350,14 @@
         const maxTextLength = 40;
         let monthlyChart;
         let divisionChart;
-
+    
         /**
          * Loads the travel history from the Google Apps Script endpoint and populates the dashboard.
          */
         async function loadDashboardData() {
             const tbody = document.getElementById('history-table-body');
             tbody.innerHTML = `<tr><td colspan="9" class="text-center py-2 text-muted">Loading data...</td></tr>`;
-
+    
             try {
                 const response = await fetch(`${scriptURL}?read=1`);
                 travelData = await response.json();
@@ -390,7 +379,7 @@
                 tbody.innerHTML = `<tr><td colspan="9" class="text-center py-2 text-danger">Failed to load data.</td></tr>`;
             }
         }
-
+    
         /**
          * Populates the travel history table with a slice of data for the current page.
          */
@@ -401,7 +390,7 @@
             const start = (page - 1) * rowsPerPage;
             const end = start + rowsPerPage;
             const paginatedData = data.slice(start, end);
-
+    
             if (paginatedData.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="9" class="text-center py-2 text-muted">No results found.</td></tr>`;
                 return;
@@ -416,7 +405,7 @@
                     formatDatePH(row.arrivalDate, false), row.purpose,
                     formatDatePH(row.timestamp, true)
                 ];
-
+    
                 const headers = ["Name", "Position", "Division", "Official Station", "Departure Date", "Destination", "Arrival Date", "Purpose", "Submitted On"];
                 
                 rowData.forEach((cellData, index) => {
@@ -424,7 +413,7 @@
                     td.className = "py-2";
                     td.setAttribute('onclick', 'copyToClipboard(this)');
                     td.setAttribute('data-full-text', cellData);
-
+    
                     if (headers[index] === "Destination" || headers[index] === "Purpose") {
                         td.classList.add('description-cell');
                         if (cellData.length > maxTextLength) {
@@ -453,7 +442,7 @@
                 toggleColumn(index, false);
             });
         }
-
+    
         /**
          * Copies the full text of a cell to the clipboard.
          */
@@ -471,8 +460,8 @@
                 });
             }
         }
-
-
+    
+    
         /**
          * Sets up the pagination controls based on the data.
          */
@@ -480,11 +469,11 @@
             const totalPages = Math.ceil(data.length / rowsPerPage);
             const paginationContainer = document.getElementById('pagination-container');
             paginationContainer.innerHTML = '';
-
+    
             // Previous Button
             const prevButton = createPaginationButton('Previous', currentPage > 1, () => changePage(currentPage - 1));
             paginationContainer.appendChild(prevButton);
-
+    
             // Page Number Buttons
             for (let i = 1; i <= totalPages; i++) {
                 const pageButton = createPaginationButton(i, i !== currentPage, () => changePage(i));
@@ -493,14 +482,14 @@
                 }
                 paginationContainer.appendChild(pageButton);
             }
-
+    
             // Next Button
             const nextButton = createPaginationButton('Next', currentPage < totalPages, () => changePage(currentPage + 1));
             paginationContainer.appendChild(nextButton);
-
+    
             populateHistoryTable(data, currentPage);
         }
-
+    
         /**
          * Creates a pagination button with specific text, state, and click handler.
          */
@@ -516,7 +505,7 @@
             }
             return button;
         }
-
+    
         /**
          * Changes the current page of the table.
          */
@@ -537,53 +526,33 @@
                 const orderDate = new Date(order.timestamp);
                 return orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear;
             }).length;
-
-
+    
+    
             document.getElementById('totalOrdersCount').innerText = totalOrders;
             document.getElementById('monthlyOrdersCount').innerText = monthlyOrders;
         }
         
         /**
-         * Filters the travel history table based on the search box input.
+         * Filters the travel history table based on the search box input and date filters.
          */
         function filterHistoryTable() {
             const input = document.getElementById('searchBox');
             const filterText = input.value.toUpperCase();
-
-            const dateFrom = document.getElementById('dateFilterFrom').value;
-            const dateTo = document.getElementById('dateFilterTo').value;
-            
-            filteredData = travelData.filter(row => {
-                const searchMatch = Object.values(row).some(value => 
-                    String(value).toUpperCase().includes(filterText)
-                );
-                
-                const departureDate = new Date(row.departureDate);
-                let dateMatch = true;
-
-                if (dateFrom) {
-                    const fromDate = new Date(dateFrom);
-                    dateMatch = dateMatch && (departureDate >= fromDate);
-                }
-
-                if (dateTo) {
-                    const toDate = new Date(dateTo);
-                    dateMatch = dateMatch && (departureDate <= toDate);
-                }
-
-                return searchMatch && dateMatch;
-            });
-
+    
+            let currentFilteredData = travelData;
+    
+            // Apply text filter
+            if (filterText) {
+                currentFilteredData = currentFilteredData.filter(row => {
+                    return row.name.toUpperCase().includes(filterText);
+                });
+            }
+    
+            filteredData = currentFilteredData;
             currentPage = 1;
             setupPagination(filteredData);
         }
-
-        function clearDateFilter() {
-            document.getElementById('dateFilterFrom').value = '';
-            document.getElementById('dateFilterTo').value = '';
-            filterHistoryTable();
-        }
-
+    
         /**
          * Formats an ISO date value to Philippine Standard Time (PST).
          */
@@ -603,9 +572,9 @@
             }
             return ph.toLocaleDateString('en-US', options).replace(',', '');
         }
-
+    
         let hiddenCols = [];
-
+    
         /**
          * Sets up the column visibility toggle checkboxes dynamically.
          */
@@ -624,7 +593,7 @@
                 
                 // Check if the column is in the saved hidden list
                 const isChecked = !savedHiddenCols.includes(index);
-
+    
                 const li = document.createElement('li');
                 li.innerHTML = `
                     <div class="form-check">
@@ -633,19 +602,19 @@
                     </div>
                 `;
                 dropdown.appendChild(li);
-
+    
                 document.getElementById(checkboxId).addEventListener('change', (e) => {
                     const columnIndex = parseInt(e.target.getAttribute('data-column-index'));
                     toggleColumn(columnIndex, e.target.checked);
                     updateHiddenCols(columnIndex, e.target.checked);
                 });
             });
-
+    
             // Apply saved column visibility on page load
             hiddenCols = savedHiddenCols;
             hiddenCols.forEach(index => toggleColumn(index, false));
         }
-
+    
         function updateHiddenCols(columnIndex, isVisible) {
             if (isVisible) {
                 hiddenCols = hiddenCols.filter(i => i !== columnIndex);
@@ -656,14 +625,14 @@
             }
             localStorage.setItem('hiddenCols', JSON.stringify(hiddenCols));
         }
-
+    
         /**
          * Toggles the visibility of a table column based on index.
          */
         function toggleColumn(columnIndex, isVisible) {
             const table = document.getElementById('historyTable');
             const rows = table.querySelectorAll('tr');
-
+    
             rows.forEach(row => {
                 const cell = row.children[columnIndex];
                 if (cell) {
@@ -671,7 +640,7 @@
                 }
             });
         }
-
+    
         /**
          * Creates a bar chart showing travel orders per month.
          */
@@ -687,7 +656,7 @@
                 const monthYear = `${months[month]}-${year}`;
                 monthlyCounts[monthYear] = 0;
             }
-
+    
             // Aggregate data by month
             data.forEach(order => {
                 const orderDate = new Date(order.timestamp);
@@ -698,16 +667,16 @@
                     monthlyCounts[monthYear]++;
                 }
             });
-
+    
             // Prepare data for the chart
             const labels = Object.keys(monthlyCounts).reverse();
             const counts = Object.values(monthlyCounts).reverse();
-
+    
             const ctx = document.getElementById('monthlyChart').getContext('2d');
             if (monthlyChart) {
                 monthlyChart.destroy();
             }
-
+    
             monthlyChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -761,14 +730,14 @@
                 const year = date.getFullYear();
                 uniqueMonths.add(`${month}-${year}`);
             });
-
+    
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             
             // Clear previous options except "All Months"
             while (monthFilter.options.length > 1) {
                 monthFilter.remove(1);
             }
-
+    
             Array.from(uniqueMonths).sort((a,b) => {
                 const [aMonth, aYear] = a.split('-').map(Number);
                 const [bMonth, bYear] = b.split('-').map(Number);
@@ -781,14 +750,14 @@
                 monthFilter.appendChild(option);
             });
         }
-
+    
         /**
          * Creates a bar chart showing travel orders by division.
          */
         function createDivisionChart() {
             const selectedMonth = document.getElementById('monthFilter').value;
             let dataToChart = travelData;
-
+    
             if (selectedMonth !== 'all') {
                 const [monthIndex, year] = selectedMonth.split('-').map(Number);
                 dataToChart = travelData.filter(order => {
@@ -796,20 +765,20 @@
                     return orderDate.getMonth() === monthIndex && orderDate.getFullYear() === year;
                 });
             }
-
+    
             const divisionCounts = dataToChart.reduce((acc, order) => {
                 acc[order.divisionUnit] = (acc[order.divisionUnit] || 0) + 1;
                 return acc;
             }, {});
-
+    
             const labels = Object.keys(divisionCounts);
             const counts = Object.values(divisionCounts);
-
+    
             const ctx = document.getElementById('divisionChart').getContext('2d');
             if (divisionChart) {
                 divisionChart.destroy();
             }
-
+    
             divisionChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -851,13 +820,13 @@
                 }
             });
         }
-
+    
         // Event listener for sidebar toggle
         function toggleSidebar() {
             const wrapper = document.querySelector('.wrapper');
             wrapper.classList.toggle('sidebar-hidden');
         }
-
+    
         // Event listener for when the DOM content is loaded.
         window.addEventListener('DOMContentLoaded', () => {
             const splashScreen = document.getElementById('splash-screen');
@@ -867,7 +836,7 @@
                 splashScreen.classList.add('hidden');
                 mainContent.classList.add('visible');
             }, 2000); // 2-second splash screen
-
+    
             // Initialize lucide icons and load data
             lucide.createIcons();
             loadDashboardData();
