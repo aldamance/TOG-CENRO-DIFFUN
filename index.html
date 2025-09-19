@@ -248,6 +248,7 @@
                     <option value="Aloni, Mary H.">Aloni, Mary H.</option>
                     <option value="Ancheta, Eddie B.">Ancheta, Eddie B.</option>
                     <option value="Ancheta, Vilma L.">Ancheta, Vilma L.</option>
+                    <option value="Andres, Edrichein P.">Andres, Edrichein P.</option>
                     <option value="Arellano, Renato M.">Arellano, Renato M.</option>
                     <option value="Bacarro, Julius Augustus B.">Bacarro, Julius Augustus B.</option>
                     <option value="Barayuga, Allan Jay D.">Barayuga, Allan Jay D.</option>
@@ -277,7 +278,6 @@
                     <option value="Ocampo, Florida Blanca S.">Ocampo, Florida Blanca S.</option>
                     <option value="Pagaduan, Raymark T.">Pagaduan, Raymark T.</option>
                     <option value="Pico, Susan D.">Pico, Susan D.</option>
-                    <option value="Andres, Edrichein P.">Andres, Edrichein P.</option>
                     <option value="Pulido, Ana Roberta">Pulido, Ana Roberta</option>
                     <option value="Ribunal, Jaynaliza A.">Ribunal, Jaynaliza A.</option>
                     <option value="Romero, Marilou E.">Romero, Marilou E.</option>
@@ -307,6 +307,7 @@
                     <option value="C/Nursery Aide">C/Nursery Aide</option>
                     <option value="C/Park Ranger">C/Park Ranger</option>
                     <option value="C/Utility Worker">C/Utility Worker</option>
+                    <option value="C/Utility Worker">C/Planning Support Staff</option>
                     <option value="Cartographer I">Cartographer I</option>
                     <option value="Ecosystems Management Specialist II">Ecosystems Management Specialist II</option>
                     <option value="Engineer II">Engineer II</option>
@@ -339,6 +340,7 @@
                     <option value="Conservation & Development Section">Conservation & Development Section</option>
                     <option value="Monitoring & Enforcement & Section">Monitoring & Enforcement Section</option>
                     <option value="Regulation & Permitting Section">Regulation & Permitting Section</option>
+                    <option value="Planning & Support Unit">Planning & Support Unit</option>
                     <option value="Records Office">Records Office</option>
                     <option value="Office of the CENR Officer">Office of the CENR Officer</option>
                     <option value="Admin">Admin</option>
@@ -385,6 +387,7 @@
                     <option value="JENNIFER O. DAMANSE, RPF">JENNIFER O. DAMANSE, RPF</option>
                     <option value="JUNE M. LAZARO, RPF">JUNE M. LAZARO, RPF</option>
                     <option value="SUSAN D. PICO">SUSAN D. PICO</option>
+                    <option value="FLORIDA BLANCA S. OCAMPO">FLORIDA BLANCA S. OCAMPO</option>
                     <option value="">NONE</option>
                   </select>
                 </div>
@@ -733,7 +736,7 @@ document.getElementById('searchInput').addEventListener('keyup', () => {
         <td style="padding-top: 18px;"><u>${data.recommendingApproval}</u></td>
     ` : '';
     const recommendingApprovalPositionHTML = isRecommendingApprovalNeeded ? `
-        <td>Section/Division Head</td>
+        <td>Section/Division/Unit Head</td>
     ` : '';
 
     const previewHTML = `
@@ -1020,5 +1023,6 @@ document.getElementById('searchInput').addEventListener('keyup', () => {
                 </script>
 
              </html>
+
 
 
