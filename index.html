@@ -7,448 +7,582 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-  <link rel="icon" href="assets/logo1.svg" type="image/svg+xml" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/logo1.png" type="image/svg+xml" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
+    /* === Modernized Variables === */
     :root {
         --denr-green: #007236;
-        --denr-green-dark: #005a2b; /* Added for consistency */
+        --denr-green-light: #4caf50; 
+        --denr-green-dark: #08331a; 
         --primary-text: #212529;
         --secondary-text: #6c757d;
-        --border-color: #dee2e6;
+        --border-color: #e0e0e0; 
         --light-bg: #ffffff;
-        --main-bg: #f5f7fa;
+        --main-bg: #f8f9fa; 
+        --shadow-elevation-2: 0 3px 6px rgba(0, 0, 0, 0.08), 0 3px 6px rgba(0, 0, 0, 0.12);
+        --shadow-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.1);
+
+        /* Sidebar Variables */
+        --sidebar-width: 280px;
+        --sidebar-bg: var(--denr-green-dark);
     }
 
-    /* === Base Styles === */
+    /* === Base Styles for Sidebar Layout === */
     body {
         font-family: 'Poppins', sans-serif;
         background-color: var(--main-bg);
         color: var(--primary-text);
-        padding-top: 5rem;
-        font-size: 0.875rem;
-        line-height: 1.5;
-        transition: background-color 0.3s ease; /* Smooth transition for dark mode */
+        /* FONT SIZE ADJUSTMENT: Reduced base size from 0.95rem to 0.85rem */
+        font-size: 0.85rem; 
+        line-height: 1.6;
+        overflow-x: hidden; 
     }
 
-    /* === Navbar === */
+    #wrapper {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    /* === Sidebar Styles === */
+    #sidebar-wrapper {
+        min-height: 100vh;
+        margin-left: calc(var(--sidebar-width) * -1);
+        transition: margin 0.25s ease-out;
+        width: var(--sidebar-width);
+        background-color: var(--sidebar-bg);
+        box-shadow: var(--shadow-elevation-2);
+        position: fixed;
+        z-index: 1030;
+    }
+
+    #sidebar-wrapper .sidebar-heading {
+        padding: 1.5rem 1.25rem;
+        /* FONT SIZE ADJUSTMENT: Reduced from 1.2rem to 1.1rem */
+        font-size: 1.1rem; 
+        color: white;
+        font-weight: 600;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #sidebar-wrapper .list-group-item {
+        background-color: var(--sidebar-bg);
+        color: rgba(255, 255, 255, 0.75);
+        border: none;
+        padding: 0.75rem 1.25rem;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    #sidebar-wrapper .list-group-item:hover,
+    #sidebar-wrapper .list-group-item.active {
+        background-color: var(--denr-green-dark);
+        color: white;
+        border-left: 5px solid white;
+        padding-left: 0.8rem;
+    }
+
+    /* === Content Area Styles === */
+    #page-content-wrapper {
+        width: 80%;
+        flex-grow: 1; 
+        min-height: 100vh;
+        padding: 20px;
+        transition: margin-left 0.25s ease-out;
+    }
+
+    @media (min-width: 768px) {
+        #sidebar-wrapper {
+            margin-left: 0;
+        }
+
+        #page-content-wrapper {
+            margin-left: var(--sidebar-width);
+        }
+
+        body.sb-sidenav-toggled #sidebar-wrapper {
+            margin-left: calc(var(--sidebar-width) * -1);
+        }
+
+        body.sb-sidenav-toggled #page-content-wrapper {
+            margin-left: 0;
+        }
+    }
+    
+    @media (max-width: 767.98px) {
+        body.sb-sidenav-toggled #sidebar-wrapper {
+            margin-left: 0;
+        }
+    }
+
+    /* === Navbar (Header) === */
     .navbar {
-        background-color: var(--denr-green);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: var(--light-bg);
+        box-shadow: var(--shadow-elevation-1);
+        z-index: 1020;
     }
 
     .navbar-brand {
-        font-weight: 500;
+        color: var(--denr-green-dark) !important;
+        font-weight: 700;
         font-size: 1.1rem;
     }
 
-    /* === Buttons === */
+    .nav-denr-title {
+        color: var(--secondary-text);
+        /* FONT SIZE ADJUSTMENT: Reduced from 0.9rem to 0.8rem */
+        font-size: 0.8rem;
+    }
+
+    /* Remaining Component Styles */
+    .btn {
+        font-weight: 500;
+        border-radius: 0.5rem;
+        /* BUTTON SIZE ADJUSTMENT: Reduced padding for smaller look */
+        padding: 0.5rem 1.5rem; 
+        transition: all 0.2s ease-in-out;
+        box-shadow: var(--shadow-elevation-1);
+    }
+    
     .btn-denr {
         background-color: var(--denr-green);
         color: white;
-        border: 1px solid var(--denr-green);
-        padding: 0.5rem 1.5rem;
-        transition: all 0.2s ease-in-out;
+        border: none;
     }
 
     .btn-denr:hover {
-        background-color: var(--denr-green-dark); /* Using the new variable */
-        transform: translateY(-2px);
-        color: white; /* Explicitly set to white for hover state */
+        background-color: var(--denr-green-dark);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-elevation-2);
+        color: white; 
     }
 
     .btn-outline-denr {
-        border: 1px solid var(--denr-green);
+        border: 2px solid var(--denr-green);
         color: var(--denr-green);
-        padding: 0.5rem 1.5rem;
-        transition: all 0.2s ease-in-out;
+        background-color: transparent;
+        box-shadow: none;
     }
     
     .btn-outline-denr:hover {
-        background-color: var(--denr-green);
+        background-color: var(--denr-green-light);
         color: white;
-        transform: translateY(-2px);
+        transform: translateY(-1px);
+        border-color: var(--denr-green-light);
+        box-shadow: var(--shadow-elevation-1);
     }
 
-    .modal-floating {
-    position: fixed; /* This makes the modal stay in the same place on the screen */
-    top: 50%; /* Puts the top edge of the modal at the vertical center of the screen */
-    left: 50%; /* Puts the left edge of the modal at the horizontal center of the screen */
-    transform: translate(-50%, -50%); /* This centers the modal perfectly */
-    z-index: 1050; /* Ensures the modal appears on top of other content */
-    background-color: white; /* Give it a background so it's not transparent */
-    padding: 20px; /* Add some padding for content inside */
-    border-radius: 8px; /* Rounded corners for a modern look */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* A subtle shadow to give it a "floating" effect */
-}
-
-    /* === Cards === */
     .card {
         background-color: var(--light-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 0.5rem;
-        padding: 2rem;
-        transition: box-shadow 0.3s ease-in-out; /* More specific transition */
+        border: none;
+        border-radius: 1rem;
+        padding: 2.5rem;
+        box-shadow: var(--shadow-elevation-2);
+        transition: box-shadow 0.3s ease-in-out, transform 0.3s ease;
         height: 100%;
     }
-    #submitBtn:focus {
-    outline: none !important;
-    box-shadow: none !important;
-}
 
-    
     .card-title {
-        font-weight: 500;
-        font-size: 1.25rem;
-        margin-bottom: 1.5rem;
-        color: var(--denr-green);
+        font-weight: 600;
+        /* FONT SIZE ADJUSTMENT: Reduced from 1.5rem to 1.3rem */
+        font-size: 1.3rem; 
+        margin-bottom: 2rem;
+        color: var(--denr-green-dark);
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    /* === Forms === */
     .form-label {
         font-weight: 500;
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.35rem;
+        /* FONT SIZE ADJUSTMENT: Reduced from 0.9rem to 0.8rem */
+        font-size: 0.8rem;
+        color: var(--secondary-text);
     }
     
     .form-control, .form-select {
-        border-radius: 0.375rem;
+        border-radius: 0.5rem;
         border: 1px solid var(--border-color);
-        padding: 0.5rem 0.75rem;
-        font-size: 0.875rem;
-        transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        /* FORM INPUT ADJUSTMENT: Reduced padding for a smaller input field */
+        padding: 0.5rem 0.75rem; 
+        /* FONT SIZE ADJUSTMENT: Reduced from 0.95rem to 0.85rem */
+        font-size: 0.85rem; 
+        background-color: var(--main-bg);
     }
 
     .form-control:focus, .form-select:focus {
-        border-color: var(--denr-green);
-        box-shadow: 0 0 0 0.25rem rgba(0, 114, 54, 0.25);
+        border-color: var(--denr-green-light);
+        background-color: var(--light-bg);
+        box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+    }
+    
+    #submitBtn:focus {
+        outline: none !important;
+        box-shadow: none !important;
     }
 
-    /* === Tables === */
+    .table-responsive {
+        border: none;
+        border-radius: 0.75rem;
+        box-shadow: var(--shadow-elevation-1);
+        padding: 0;
+        overflow-y: auto;
+        max-height: 500px;
+        background-color: var(--light-bg);
+    }
+    
     .table {
-        font-size: 0.85rem;
+        /* FONT SIZE ADJUSTMENT: Reduced from 0.9rem to 0.8rem */
+        font-size: 0.8rem;
     }
     
     .table thead th {
         background-color: var(--main-bg);
-        border-bottom: 2px solid var(--denr-green);
+        border-bottom: 2px solid var(--denr-green-light);
         font-weight: 600;
-        color: var(--primary-text);
+        color: var(--denr-green-dark);
         text-transform: uppercase;
     }
 
-    .table td, .table th {
-        border-color: #e9ecef;
-        vertical-align: middle;
+    .table-hover tbody tr:hover {
+        background-color: #f0f0f0;
+        cursor: pointer;
     }
 
-    .table-responsive {
-        border: 1px solid var(--border-color);
-        border-radius: 0.5rem;
-        padding: 0;
-        overflow-y: auto;
-        max-height: 500px;
+    .input-group-text {
+        background-color: var(--main-bg);
+        border-radius: 0.5rem 0 0 0.5rem;
     }
-    
-    /* === Layout === */
-    .two-column-layout {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0 rem;
-        max-width: 1400px;
-    }
-    
-    @media (max-width: 992px) {
-        .two-column-layout {
-            grid-template-columns: 1fr;
-        }
-    }
-/* Splash Screen Styles */
-#splash-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #007236;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    opacity: 1;
-    transition: opacity 1s ease-in-out;
-}
 
-/* Fading out class, added by JavaScript */
-#splash-screen.fade-out {
-    opacity: 0;
-}
+    /* === Splash Screen Styles === */
+    #splash-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--denr-green), var(--denr-green-dark));
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        transition: opacity 1s ease-out;
+        opacity: 1;
+    }
 
-/* Animations and size for the logo */
-#splash-screen img {
-    /* Corrected: Explicitly set the logo size */
-    max-width: 150px;
-    height: auto;
-    animation: pulse 2s infinite;
-}
+    #splash-screen.fade-out {
+        opacity: 0;
+        pointer-events: none;
+    }
 
-@keyframes pulse {
-    0% {
-        transform: scale(1);
+    #splash-screen img {
+        max-width: 120px;
+        margin-bottom: 10px;
     }
-    50% {
-        transform: scale(1.05);
+
+    /* === Modal Styles === */
+    .modal-content {
+        border-radius: 1rem;
+        box-shadow: var(--shadow-elevation-2);
     }
-    100% {
-        transform: scale(1);
+    .modal-header {
+        border-bottom: none;
     }
-}
+    .modal-footer {
+        border-top: none;
+    }
+    .text-denr {
+        color: var(--denr-green) !important;
+    }
+        .developed-by {
+      position: fixed;bottom: 1rem;right: 1rem;
+      color: #6b7280;font-size: 11px;opacity: 0.9;text-align:right;
+    }
 </style>
 </head>
-<body>
+<body class=""> 
   <div id="splash-screen">
-    <img src="assets/logo2.png" 
+    <img src="assets/logo1.png" 
         alt="CENRO DIFFUN Logo" 
         class="w-6 h-6 mb-1">
-    <h1 class="text-4xl font-bold text-white">CENRO DIFFUN</h1>
-    <h5 class="text-xl font-light text-white">TRAVEL ORDER GENERATOR</h5>
+    <h1 class="text-3xl font-bold text-white">CENRO DIFFUN</h1>
+    <h5 class="text-lg font-light text-white">TRAVEL ORDER GENERATOR</h5>
 </div>
 
-<div id="main-content">
-    <nav class="navbar navbar-expand-lg fixed-top">
-      <div class="container-fluid d-flex justify-content-between align-items-center px-4">
-        <div class="d-flex align-items-center">
-          <img src="assets/logo1.svg" alt="DENR Logo" style="height: 40px; margin-right: 10px;" />
-          <span class="navbar-brand mb-0 text-white">
-            Community Environment and Natural Resources Office - Diffun
-          </span>
-        </div>
+<div id="wrapper">
+<div id="sidebar-wrapper">
+  <div class="sidebar-heading d-flex flex-column align-items-center text-center">
+      <div class="d-flex align-items-center mb-2">
+          <img src="assets/logo1.png" alt="DENR Logo" style="height: 35px; margin-right: 10px;" />
+          <span style="font-weight: 600; color: white;">CENRO DIFFUN</span>
       </div>
-    </nav>
-  
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-12 mb-4">
-          <div class="card p-3">
-            <h4 class="card-title text-center mb-4">
-              <i data-lucide="file-text" class="me-2"></i> Travel Order Generator
-            </h4>
-            <form id="travelForm" class="needs-validation" novalidate>
-              <div class="row g-3">
-                <div class="col-md-4">
-                  <label for="name" class="form-label">Name</label>
-                  <select class="form-select" id="name" name="name" required>
-                    <option value="" disabled selected>Select a name</option>
-                    <option value="Abello, Denver John T.">Abello, Denver John T.</option>
-                    <option value="Acoba, Corazon S.">Acoba, Corazon S.</option>
-                    <option value="Acosta, Mharycris G.">Acosta, Mharycris G.</option>
-                    <option value="Agcaoili, Jaymark R.">Agcaoili, Jaymark R.</option>
-                    <option value="Aloni, Mary H.">Aloni, Mary H.</option>
-                    <option value="Ancheta, Eddie B.">Ancheta, Eddie B.</option>
-                    <option value="Ancheta, Vilma L.">Ancheta, Vilma L.</option>
-                    <option value="Andres, Edrichein P.">Andres, Edrichein P.</option>
-                    <option value="Arellano, Renato M.">Arellano, Renato M.</option>
-                    <option value="Bacarro, Julius Augustus B.">Bacarro, Julius Augustus B.</option>
-                    <option value="Barayuga, Allan Jay D.">Barayuga, Allan Jay D.</option>
-                    <option value="Barrientos, Claudine M.">Barrientos, Claudine M.</option>
-                    <option value="Butic, Cyril D.">Butic, Cyril D.</option>
-                    <option value="Calantas, Aldrin James P.">Calantas, Aldrin James P.</option>
-                    <option value="Caro, Genesis C.">Caro, Genesis C.</option>
-                    <option value="Concepcion, Ronnie B.">Concepcion, Ronnie B.</option>
-                    <option value="Damance, Aldrin N.">Damance, Aldrin N.</option>
-                    <option value="Damanse, Jennifer O.">Damanse, Jennifer O.</option>
-                    <option value="De Guzman, Mar B.">De Guzman, Mar B.</option>
-                    <option value="De Vera, Jasmine Love N.">De Vera, Jasmine Love N.</option>
-                    <option value="Del Rosario, Gilbert D.">Del Rosario, Gilbert D.</option>
-                    <option value="Dellias, Jude C.">Dellias, Jude C.</option>
-                    <option value="Delos Santos, Roxann B.">Delos Santos, Roxann B.</option>
-                    <option value="Gatin, Alvin B.">Gatin, Alvin B.</option>
-                    <option value="Lazaro, June M.">Lazaro, June M.</option>
-                    <option value="Lorete, Federico T.">Lorete, Federico T.</option>
-                    <option value="Lopez, Fredrick John P.">Lopez, Fredrick John P.</option>
-                    <option value="Mabborang, Corazon L.">Mabborang, Corazon L.</option>
-                    <option value="Magat, Sebastian M.">Magat, Sebastian M.</option>
-                    <option value="Manglapuz, Ariel M.">Manglapuz, Ariel M.</option>
-                    <option value="Mariñas-Gatin, Jennilyn G.">Mariñas-Gatin, Jennilyn G.</option>
-                    <option value="Nahoy, Ngoy Ngoy D.">Nahoy, Ngoy Ngoy D.</option>
-                    <option value="Nanglihan, Romel B.">Nanglihan, Romel B.</option>
-                    <option value="Navarro, Alberto, Jr. P.">Navarro, Alberto, Jr. P.</option>
-                    <option value="Nonan, Maribel V.">Nonan, Maribel V.</option>
-                    <option value="Ocampo, Florida Blanca S.">Ocampo, Florida Blanca S.</option>
-                    <option value="Pagaduan, Raymark T.">Pagaduan, Raymark T.</option>
-                    <option value="Pico, Susan D.">Pico, Susan D.</option>
-                    <option value="Pulido, Ana Roberta">Pulido, Ana Roberta</option>
-                    <option value="Ribunal, Jaynaliza A.">Ribunal, Jaynaliza A.</option>
-                    <option value="Romero, Marilou E.">Romero, Marilou E.</option>
-                    <option value="Romero, Randy C.">Romero, Randy C.</option>
-                    <option value="Salvador, Dennis C.">Salvador, Dennis C.</option>
-                    <option value="Santiago, Alejandro G.">Santiago, Alejandro G.</option>
-                    <option value="Seraspi, Jan Millius A.">Seraspi, Jan Millius A.</option>
-                    <option value="Simodio, Sonny O.">Simodio, Sonny O.</option>
-                    <option value="Sojor, Marie Belle E.">Sojor, Marie Belle E.</option>
-                    <option value="Soriano, Norissa Belle L.">Soriano, Norissa Belle L.</option>
-                    <option value="Turtosa, Sixto Jr. C.">Turtosa, Sixto Jr. C.</option>
-                    <option value="Viray, Rodelito B.">Viray, Rodelito B.</option>
-                    <option value="Yanguas, Roque S.">Yanguas, Roque S.</option>
-                  </select>
-                </div>
-                <div class="col-md-4">
-                  <label for="position" class="form-label">Position</label>
-                  <select class="form-select" id="position" name="position" required>
-                    <option value="" disabled selected>Select a position</option>
-                    <option value="Administrative Aide I">Administrative Aide I</option>
-                    <option value="Administrative Aide VI">Administrative Aide VI</option>
-                    <option value="Administrative Officer I">Administrative Officer I</option>
-                    <option value="C/Administrative Aide/Driver">C/Administrative Aide/Driver</option>
-                    <option value="C/Data Management Officer">C/Data Management Officer</option>
-                    <option value="C/Forester">C/Forester</option>
-                    <option value="C/Forest Extension Officer">C/Forest Extension Officer</option>
-                    <option value="C/Forest Protection Officer">C/Forest Protection Officer</option>
-                    <option value="C/Nursery Aide">C/Nursery Aide</option>
-                    <option value="C/Park Ranger">C/Park Ranger</option>
-                    <option value="C/Utility Worker">C/Utility Worker</option>
-                    <option value="C/Planning Support Staff">C/Planning Support Staff</option>
-                    <option value="Cartographer I">Cartographer I</option>
-                    <option value="Ecosystems Management Specialist II">Ecosystems Management Specialist I</option>
-                    <option value="Ecosystems Management Specialist II">Ecosystems Management Specialist II</option>
-                    <option value="Engineer II">Engineer II</option>
-                    <option value="Forester I">Forester I</option>
-                    <option value="Forester I">Forester II</option>
-                    <option value="Forester III">Forester III</option>
-                    <option value="Forest Ranger">Forest Ranger</option>
-                    <option value="Forest Technician I">Forest Technician I</option>
-                    <option value="Forest Technician II">Forest Technician II</option>
-                    <option value="IT Support Staff">IT Support Staff</option>
-                    <option value="Laborer I (CTI)">Laborer I (CTI)</option>
-                    <option value="Lams Encoder">Lams Encoder</option>
-                    <option value="Land Management Examiner">Land Management Examiner</option>
-                    <option value="Land Management Officer I">Land Management Officer I</option>
-                    <option value="Land Management Officer II">Land Management Officer II</option>
-                    <option value="Land Management Officer III">Land Management Officer III</option>
-                    <option value="Land Mgt. Inspector">Land Mgt. Inspector</option>
-                    <option value="Park Maintenance Foreman">Park Maintenance Foreman</option>
-                    <option value="Park Ranger">Park Ranger</option>
-                    <option value="Senior Ecosystems Management Specialist">Senior Ecosystems Management Specialist</option>
-                    <option value="Special Investigator I">Special Investigator I</option>
-                    <option value="Special Investigator II">Special Investigator II</option>
-                    <option value="Supervising Ecosystems Management Specialist">Supervising Ecosystems Management Specialist</option>
-                  </select>
-                </div>
-                <div class="col-md-4">
-                  <label for="divisionUnit" class="form-label">Div/Sec/Unit</label>
-                  <select class="form-select" id="divisionUnit" name="divisionUnit" required>
-                    <option value="" disabled selected>Select a section</option>
-                    <option value="Conservation & Development Section">Conservation & Development Section</option>
-                    <option value="Monitoring & Enforcement & Section">Monitoring & Enforcement Section</option>
-                    <option value="Regulation & Permitting Section">Regulation & Permitting Section</option>
-                    <option value="Planning & Support Unit">Planning & Support Unit</option>
-                    <option value="Records Office">Records Office</option>
-                    <option value="Office of the CENR Officer">Office of the CENR Officer</option>
-                    <option value="Admin">Admin</option>
-                  </select>
-                </div>
-                <div class="col-md-4">
-                  <label for="officialStation" class="form-label">Official Station</label>
-                  <select class="form-select" id="officialStation" name="officialStation" required>
-                    <option value="CENRO Diffun" selected>CENRO Diffun</option>
-                  </select>
-                </div>
-                <div class="col-md-4">
-                  <label for="departureDate" class="form-label">Departure Date</label>
-                  <input type="date" class="form-control" id="departureDate" name="departureDate" required />
-                </div>
-                <div class="col-md-4">
-                  <label for="arrivalDate" class="form-label">Arrival Date</label>
-                  <input type="date" class="form-control" id="arrivalDate" name="arrivalDate" required />
-                </div>
-                <div class="col-md-4">
-                  <label for="destination" class="form-label">Destination</label>
-                  <textarea class="form-control" id="destination" name="destination" rows="2"
-                            required placeholder="e.g. Tuguegarao City"></textarea>
-                </div>
-                <div class="col-md-4">
-                  <label for="purpose" class="form-label">Purpose</label>
-                  <textarea class="form-control" id="purpose" name="purpose" rows="2"
-                            required placeholder="Enter purpose of travel..."></textarea>
-                </div>
-                <div class="col-md-4">
-                  <label for="fundAppropriation" class="form-label">Fund Appropriation</label>
-                  <select class="form-select" id="fundAppropriation" name="fundAppropriation" required>
-                    <option value="PER COA REGULATION" selected>PER COA REGULATION</option>
-                  </select>
-                </div>
-                <div class="col-md-4">
-                  <label for="remarks" class="form-label">Remarks</label>
-                  <input type="text" class="form-control" id="remarks" name="remarks" placeholder="Optional" />
-                </div>
-                <div class="col-md-4">
-                  <label for="recommendingApproval" class="form-label">Recommending Approval</label>
-                  <select class="form-select" id="recommendingApproval" name="recommendingApproval" required>
-                    <option value="" disabled selected>Select name</option>
-                    <option value="JENNIFER O. DAMANSE, RPF">JENNIFER O. DAMANSE, RPF</option>
-                    <option value="JUNE M. LAZARO, RPF">JUNE M. LAZARO, RPF</option>
-                    <option value="SUSAN D. PICO">SUSAN D. PICO</option>
-                    <option value="FLORIDA BLANCA S. OCAMPO">FLORIDA BLANCA S. OCAMPO</option>
-                    <option value="">NONE</option>
-                  </select>
-                </div>
-                <div class="col-md-4">
-                  <label for="approved" class="form-label">Approved By</label>
-                  <select class="form-select" id="approved" name="approved" required>
-                    <option value="CORAZON L. MABBORANG, RPF" selected>CORAZON L. MABBORANG, RPF</option>
-                  </select>
-                </div>
-              </div>
-  
-              <div class="d-flex justify-content-center gap-3 mt-4">
-                <button type="submit" class="btn btn-denr" id="submitBtn">Submit</button>
-              </div>
-              <div id="response" class="mt-3 text-center"></div>
-            </form>
-          </div>
-        </div>
-  
-        <div class="col-12">
-            <div class="card p-3">
-                <h5 class="card-title text-center"><i data-lucide="clock" class="me-2"></i> Travel Order History</h5>
-        
-                <div class="row g-3 mb-3">
-                    <div class="col-md-12">
-                        <div class="input-group">
-                            <span class="input-group-text"><i data-lucide="search"></i></span>
-                            <input type="text" class="form-control" id="searchInput" placeholder="Search by name...">
-                        </div>
+      <div style="font-size: 0.85rem; color: #d1d5db; font-weight: 400;">
+          Travel Order Generator System
+      </div>
+  </div>
+
+  <div class="list-group list-group-flush mt-2">
+      <a class="list-group-item active" href="#create-new-travel-order">
+          <i data-lucide="file-text" class="me-2"></i> Create New TO
+      </a>
+      <a class="list-group-item" href="#travel-order-history">
+          <i data-lucide="clock" class="me-2"></i> Travel History
+      </a>
+      <a class="list-group-item" href="javascript:void(0)" onclick="document.getElementById('travelForm').reset()">
+          <i data-lucide="refresh-cw" class="me-2"></i> Reset Form
+      </a>
+  </div>
+</div>
+    <div id="page-content-wrapper">
+        <nav class="navbar navbar-expand-lg border-bottom">
+            <div class="container-fluid">
+                <button class="btn btn-outline-denr" id="sidebarToggle">
+                    <i data-lucide="menu"></i>
+                </button>
+                <span class="nav-denr-title ms-3 d-none d-sm-block">
+                    Community Environment and Natural Resources Office - Diffun
+                </span>
+            </div>
+        </nav>
+
+        <div class="container-fluid py-4">
+            <div class="row" id="create-new-travel-order">
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <h4 class="card-title text-center mb-4">
+                            <i data-lucide="file-text" class="me-2 text-denr" style="width: 1.5em; height: 1.5em;"></i> 
+                            Create New Travel Order
+                        </h4>
+                        <form id="travelForm" class="needs-validation" novalidate>
+                            <div class="row g-3"> <div class="col-md-4">
+                                  <label for="name" class="form-label">Name</label>
+                                  <select class="form-select" id="name" name="name" required>
+                                    <option value="" disabled selected>Select a name</option>
+                                    <option value="Abello, Denver John T.">Abello, Denver John T.</option>
+                                    <option value="Acoba, Corazon S.">Acoba, Corazon S.</option>
+                                    <option value="Acosta, Mharycris G.">Acosta, Mharycris G.</option>
+                                    <option value="Agcaoili, Jaymark R.">Agcaoili, Jaymark R.</option>
+                                    <option value="Aloni, Mary H.">Aloni, Mary H.</option>
+                                    <option value="Ancheta, Eddie B.">Ancheta, Eddie B.</option>
+                                    <option value="Ancheta, Vilma L.">Ancheta, Vilma L.</option>
+                                    <option value="Andres, Edrichein P.">Andres, Edrichein P.</option>
+                                    <option value="Arellano, Renato M.">Arellano, Renato M.</option>
+                                    <option value="Bacarro, Julius Augustus B.">Bacarro, Julius Augustus B.</option>
+                                    <option value="Barayuga, Allan Jay D.">Barayuga, Allan Jay D.</option>
+                                    <option value="Barrientos, Claudine M.">Barrientos, Claudine M.</option>
+                                    <option value="Butic, Cyril D.">Butic, Cyril D.</option>
+                                    <option value="Calantas, Aldrin James P.">Calantas, Aldrin James P.</option>
+                                    <option value="Caro, Genesis C.">Caro, Genesis C.</option>
+                                    <option value="Concepcion, Ronnie B.">Concepcion, Ronnie B.</option>
+                                    <option value="Damance, Aldrin N.">Damance, Aldrin N.</option>
+                                    <option value="Damanse, Jennifer O.">Damanse, Jennifer O.</option>
+                                    <option value="De Guzman, Mar B.">De Guzman, Mar B.</option>
+                                    <option value="De Vera, Jasmine Love N.">De Vera, Jasmine Love N.</option>
+                                    <option value="Del Rosario, Gilbert D.">Del Rosario, Gilbert D.</option>
+                                    <option value="Dellias, Jude C.">Dellias, Jude C.</option>
+                                    <option value="Delos Santos, Roxann B.">Delos Santos, Roxann B.</option>
+                                    <option value="Gatin, Alvin B.">Gatin, Alvin B.</option>
+                                    <option value="Lazaro, June M.">Lazaro, June M.</option>
+                                    <option value="Lorete, Federico T.">Lorete, Federico T.</option>
+                                    <option value="Lopez, Fredrick John P.">Lopez, Fredrick John P.</option>
+                                    <option value="Mabborang, Corazon L.">Mabborang, Corazon L.</option>
+                                    <option value="Magat, Sebastian M.">Magat, Sebastian M.</option>
+                                    <option value="Manglapuz, Ariel M.">Manglapuz, Ariel M.</option>
+                                    <option value="Mariñas-Gatin, Jennilyn G.">Mariñas-Gatin, Jennilyn G.</option>
+                                    <option value="Nahoy, Ngoy Ngoy D.">Nahoy, Ngoy Ngoy D.</option>
+                                    <option value="Nanglihan, Romel B.">Nanglihan, Romel B.</option>
+                                    <option value="Navarro, Alberto, Jr. P.">Navarro, Alberto, Jr. P.</option>
+                                    <option value="Nonan, Maribel V.">Nonan, Maribel V.</option>
+                                    <option value="Ocampo, Florida Blanca S.">Ocampo, Florida Blanca S.</option>
+                                    <option value="Pagaduan, Raymark T.">Pagaduan, Raymark T.</option>
+                                    <option value="Pico, Susan D.">Pico, Susan D.</option>
+                                    <option value="Pulido, Ana Roberta">Pulido, Ana Roberta</option>
+                                    <option value="Ribunal, Jaynaliza A.">Ribunal, Jaynaliza A.</option>
+                                    <option value="Romero, Marilou E.">Romero, Marilou E.</option>
+                                    <option value="Romero, Randy C.">Romero, Randy C.</option>
+                                    <option value="Salvador, Dennis C.">Salvador, Dennis C.</option>
+                                    <option value="Santiago, Alejandro G.">Santiago, Alejandro G.</option>
+                                    <option value="Seraspi, Jan Millius A.">Seraspi, Jan Millius A.</option>
+                                    <option value="Simodio, Sonny O.">Simodio, Sonny O.</option>
+                                    <option value="Sojor, Marie Belle E.">Sojor, Marie Belle E.</option>
+                                    <option value="Soriano, Norissa Belle L.">Soriano, Norissa Belle L.</option>
+                                    <option value="Turtosa, Sixto Jr. C.">Turtosa, Sixto Jr. C.</option>
+                                    <option value="Viray, Rodelito B.">Viray, Rodelito B.</option>
+                                    <option value="Yanguas, Roque S.">Yanguas, Roque S.</option>
+                                  </select>
+                                </div>
+                                <div class="col-md-4">
+                                  <label for="position" class="form-label">Position</label>
+                                  <select class="form-select" id="position" name="position" required>
+                                    <option value="" disabled selected>Select a position</option>
+                                    <option value="Administrative Aide I">Administrative Aide I</option>
+                                    <option value="Administrative Aide VI">Administrative Aide VI</option>
+                                    <option value="Administrative Officer I">Administrative Officer I</option>
+                                    <option value="C/Administrative Aide/Driver">C/Administrative Aide/Driver</option>
+                                    <option value="C/Data Management Officer">C/Data Management Officer</option>
+                                    <option value="C/Forester">C/Forester</option>
+                                    <option value="C/Forest Extension Officer">C/Forest Extension Officer</option>
+                                    <option value="C/Forest Protection Officer">C/Forest Protection Officer</option>
+                                    <option value="C/Nursery Aide">C/Nursery Aide</option>
+                                    <option value="C/Park Ranger">C/Park Ranger</option>
+                                    <option value="C/Utility Worker">C/Utility Worker</option>
+                                    <option value="C/Planning Support Staff">C/Planning Support Staff</option>
+                                    <option value="Cartographer I">Cartographer I</option>
+                                    <option value="Ecosystems Management Specialist II">Ecosystems Management Specialist I</option>
+                                    <option value="Ecosystems Management Specialist II">Ecosystems Management Specialist II</option>
+                                    <option value="Engineer II">Engineer II</option>
+                                    <option value="Forester I">Forester I</option>
+                                    <option value="Forester I">Forester II</option>
+                                    <option value="Forester III">Forester III</option>
+                                    <option value="Forest Ranger">Forest Ranger</option>
+                                    <option value="Forest Technician I">Forest Technician I</option>
+                                    <option value="Forest Technician II">Forest Technician II</option>
+                                    <option value="IT Support Staff">IT Support Staff</option>
+                                    <option value="Laborer I (CTI)">Laborer I (CTI)</option>
+                                    <option value="Lams Encoder">Lams Encoder</option>
+                                    <option value="Land Management Examiner">Land Management Examiner</option>
+                                    <option value="Land Management Officer I">Land Management Officer I</option>
+                                    <option value="Land Management Officer II">Land Management Officer II</option>
+                                    <option value="Land Management Officer III">Land Management Officer III</option>
+                                    <option value="Land Mgt. Inspector">Land Mgt. Inspector</option>
+                                    <option value="Park Maintenance Foreman">Park Maintenance Foreman</option>
+                                    <option value="Park Ranger">Park Ranger</option>
+                                    <option value="Senior Ecosystems Management Specialist">Senior Ecosystems Management Specialist</option>
+                                    <option value="Special Investigator I">Special Investigator I</option>
+                                    <option value="Special Investigator II">Special Investigator II</option>
+                                    <option value="Supervising Ecosystems Management Specialist">Supervising Ecosystems Management Specialist</option>
+                                  </select>
+                                </div>
+                                <div class="col-md-4">
+                                  <label for="divisionUnit" class="form-label">Div/Sec/Unit</label>
+                                  <select class="form-select" id="divisionUnit" name="divisionUnit" required>
+                                    <option value="" disabled selected>Select a section</option>
+                                    <option value="Conservation & Development Section">Conservation & Development Section</option>
+                                    <option value="Monitoring & Enforcement & Section">Monitoring & Enforcement Section</option>
+                                    <option value="Regulation & Permitting Section">Regulation & Permitting Section</option>
+                                    <option value="Planning & Support Unit">Planning & Support Unit</option>
+                                    <option value="Records Office">Records Office</option>
+                                    <option value="Office of the CENR Officer">Office of the CENR Officer</option>
+                                    <option value="Admin">Admin</option>
+                                  </select>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                  <label for="officialStation" class="form-label">Official Station</label>
+                                  <select class="form-select" id="officialStation" name="officialStation" required>
+                                    <option value="CENRO Diffun" selected>CENRO Diffun</option>
+                                  </select>
+                                </div>
+                                <div class="col-md-4">
+                                  <label for="departureDate" class="form-label">Departure Date</label>
+                                  <input type="date" class="form-control" id="departureDate" name="departureDate" required />
+                                </div>
+                                <div class="col-md-4">
+                                  <label for="arrivalDate" class="form-label">Arrival Date</label>
+                                  <input type="date" class="form-control" id="arrivalDate" name="arrivalDate" required />
+                                </div>
+
+                                <div class="col-md-4">
+                                  <label for="destination" class="form-label">Destination</label>
+                                  <textarea class="form-control" id="destination" name="destination" rows="2"
+                                            required placeholder="e.g. TUGUEGARAO CITY, CAGAYAN"></textarea>
+                                </div>
+                                <div class="col-md-4">
+                                  <label for="purpose" class="form-label">Purpose</label>
+                                  <textarea class="form-control" id="purpose" name="purpose" rows="2"
+                                            required placeholder="ENTER PURPOSE OF TRAVEL..."></textarea>
+                                </div>
+                                <div class="col-md-4">
+                                  <label for="fundAppropriation" class="form-label">Fund Appropriation</label>
+                                  <select class="form-select" id="fundAppropriation" name="fundAppropriation" required>
+                                    <option value="PER COA REGULATION" selected>PER COA REGULATION</option>
+                                  </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                  <label for="remarks" class="form-label">Remarks</label>
+                                  <input type="text" class="form-control" id="remarks" name="remarks" placeholder="OPTIONAL REMARKS" />
+                                </div>
+                                <div class="col-md-4">
+                                  <label for="recommendingApproval" class="form-label">Recommending Approval</label>
+                                  <select class="form-select" id="recommendingApproval" name="recommendingApproval" required>
+                                    <option value="" disabled selected>Select name</option>
+                                    <option value="JENNIFER O. DAMANSE, RPF">JENNIFER O. DAMANSE, RPF</option>
+                                    <option value="JUNE M. LAZARO, RPF">JUNE M. LAZARO, RPF</option>
+                                    <option value="SUSAN D. PICO">SUSAN D. PICO</option>
+                                    <option value="FLORIDA BLANCA S. OCAMPO">FLORIDA BLANCA S. OCAMPO</option>
+                                    <option value="">NONE</option>
+                                  </select>
+                                </div>
+                                <div class="col-md-4">
+                                  <label for="approved" class="form-label">Approved By</label>
+                                  <select class="form-select" id="approved" name="approved" required>
+                                    <option value="CORAZON L. MABBORANG, RPF" selected>CORAZON L. MABBORANG, RPF</option>
+                                  </select>
+                                </div>
+                              </div>
+                  
+                              <div class="d-flex justify-content-center gap-3 mt-4"> <button type="submit" class="btn btn-denr btn-lg" id="submitBtn">
+                                    <i data-lucide="square-arrow-right" class="me-2" style="width: 1.1em; height: 1.1em;"></i>
+                                    Preview & Submit
+                                </button>
+                              </div>
+                              <div id="response" class="mt-3 text-center"></div>
+                            </form>
                     </div>
                 </div>
-        
-                <div class="table-responsive mt-3">
-                    <table class="table table-hover text-center" id="historyTable">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Departure</th>
-                                <th>Arrival</th>
-                                <th>Timestamp</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                    <div id="history-spinner" class="d-flex justify-content-center my-5 d-none">
-                        <div class="spinner-border text-denr" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                </div>
+            </div>
+      
+            <div class="row" id="travel-order-history">
+                <div class="col-12 mb-5">
+                    <div class="card">
+                        <h5 class="card-title text-center">
+                            <i data-lucide="clock" class="me-2 text-denr" style="width: 1.5em; height: 1.5em;"></i> 
+                            Travel Order History
+                        </h5>
                 
-                <div class="d-flex justify-content-center mt-3" id="pagination-controls">
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i data-lucide="search"></i></span>
+                                    <input type="text" class="form-control" id="searchInput" placeholder="Search by name...">
+                                </div>
+                            </div>
+                        </div>
+                
+                        <div class="table-responsive">
+                            <table class="table table-hover text-center mb-0" id="historyTable">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Departure</th>
+                                        <th>Arrival</th>
+                                        <th>Timestamp</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                            <div id="history-spinner" class="d-flex justify-content-center my-5 d-none">
+                                <div class="spinner-border text-denr" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-center mt-4" id="pagination-controls">
+                        </div>
                     </div>
+                </div>
             </div>
         </div>
-  
-    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
+    </div>
+    </div>
+<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="previewModalLabel">Travel Order Preview</h5>
@@ -456,265 +590,280 @@
           </div>
           <div class="modal-body" id="printablePreview"></div>
           <div class="modal-footer" id="previewModalFooter">
-            <button class="btn btn-outline-denr" onclick="printPreview()">Print Travel Order</button>
-            <button type="button" class="btn btn-denr" id="submitFromPreviewBtn" onclick="submitFromPreview()">Submit</button>
-            <button type="button" class="btn btn-outline-denr" data-bs-dismiss="modal">Cancel</button>
-          </div>
+            </div>
         </div>
       </div>
     </div>
+    
+    <div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center py-5">
+                    <div class="spinner-border text-denr" role="status">
+                        <span class="visually-hidden">Processing...</span>
+                    </div>
+                    <p class="mt-3">Processing Travel Order...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="successModalLabel">Success!</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <i data-lucide="check-circle" class="text-success mb-3" style="width: 48px; height: 48px;"></i>
+                    <p class="h5">Travel Order Submitted Successfully.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-denr" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+          <div class="developed-by">
+    Developed by <br><strong>ALDRIN N. DAMANCE, LPT <br>IT SUPPORT STAFF</strong>
   </div>
-                <script>
-                    const scriptURL = 'https://script.google.com/macros/s/AKfycbxqI83J6J-QT6WCucHdWYhhzKW6OQEZ2Xs7UPqYjZO3j10oJ7dbWKyBbXe-dl7zBJccmw/exec';
-                
-                    // Event listener for the form submission
-                    document.getElementById('travelForm').addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const form = e.target;
-                    if (!form.checkValidity()) {
-                        form.classList.add('was-validated');
-                        return;
-                    }
 
-                    const depDate = new Date(document.getElementById('departureDate').value);
-                    const arrDate = new Date(document.getElementById('arrivalDate').value);
-                    if (arrDate < depDate) {
-                        alert("Arrival date must not be earlier than Departure date.");
-                        return;
-                    }
+<script>
+    // === SCRIPT FUNCTIONS (No changes to logic, only updated to the new HTML structure) ===
 
-                    const shouldPreview = confirm("Do you want to preview your Travel Order?");
-                    if (shouldPreview) {
-                        // Show the preview with only the submit button
-                        generatePreview(true, false);
-                    } else {
-                        submitForm();
-                    }
-                });
-                
-                    /**
-                     * Submits the form data to the Google Apps Script endpoint.
-                     * Displays loading and success modals, and handles errors.
-                     */
- async function submitForm() {
-                        const form = document.getElementById('travelForm');
-                        const submitBtn = document.getElementById('submitBtn');
-                        const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
-                        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-                
-                        loadingModal.show();
-                        submitBtn.disabled = true;
-                        const fd = new FormData(form);
-                
-                        try {
-                            await fetch(scriptURL, { method: 'POST', body: fd });
-                            form.reset();
-                            form.classList.remove('was-validated');
-                            loadTravelHistory();
-                            loadingModal.hide();
-                            successModal.show();
-                        } catch (err) {
-                            document.getElementById('response').innerHTML = `<div class="alert alert-danger">Submission failed. Please try again later.</div>`;
-                            loadingModal.hide();
-                        } finally {
-                            submitBtn.disabled = false;
-                            setTimeout(() => document.getElementById('response').innerHTML = '', 4000);
-                        }
-                    }
-                
-                    /**
-                     * Loads the travel history from the Google Apps Script endpoint and populates the history table.
-                     */
-/**
- * Loads the travel history from the Google Apps Script endpoint and populates the history table.
- * It stores the raw data in a global variable and then calls filterTable to render.
- */
- // Global variables for pagination
-let currentPage = 1;
-const rowsPerPage = 15;
-let filteredData = [];
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxqI83J6J-QT6WCucHdWYhhzKW6OQEZ2Xs7UPqYjZO3j10oJ7dbWKyBbXe-dl7zBJccmw/exec';
 
-async function loadTravelHistory() {
-    const spinner = document.getElementById('history-spinner');
-    const tbody = document.querySelector('#historyTable tbody');
-    const paginationControls = document.getElementById('pagination-controls');
-
-    spinner.classList.remove('d-none');
-    tbody.innerHTML = '';
-    paginationControls.innerHTML = '';
-
-    try {
-        const response = await fetch(`${scriptURL}?read=1`);
-        const data = await response.json();
-
-        spinner.classList.add('d-none');
-        window.travelData = data;
-
-        if (data && data.length > 0) {
-            filterAndRenderTable();
-        } else {
-            tbody.innerHTML = `<tr><td colspan="5" class="text-center">No travel orders submitted yet.</td></tr>`;
+    document.getElementById('travelForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        if (!form.checkValidity()) {
+            form.classList.add('was-validated');
+            return;
         }
-    } catch (error) {
-        console.error('Error fetching travel history:', error);
-        spinner.classList.add('d-none');
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Failed to load travel history.</td></tr>`;
-    }
-}
 
-function filterAndRenderTable() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const tbody = document.querySelector('#historyTable tbody');
+        const depDate = new Date(document.getElementById('departureDate').value);
+        const arrDate = new Date(document.getElementById('arrivalDate').value);
+        if (arrDate < depDate) {
+            alert("Arrival date must not be earlier than Departure date.");
+            return;
+        }
 
-    // Filter the global data array based on search term
-    filteredData = window.travelData.filter(row => {
-        return row.name && row.name.toLowerCase().includes(searchTerm);
+        const shouldPreview = confirm("Do you want to preview your Travel Order?");
+        if (shouldPreview) {
+            generatePreview(true, false);
+        } else {
+            submitForm();
+        }
     });
 
-    renderTable();
-    updatePagination();
-}
+    async function submitForm() {
+        const form = document.getElementById('travelForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+        const responseDiv = document.getElementById('response');
 
-function renderTable() {
-    const tbody = document.querySelector('#historyTable tbody');
-    tbody.innerHTML = '';
+        loadingModal.show();
+        submitBtn.disabled = true;
+        const fd = new FormData(form);
 
-    if (filteredData.length > 0) {
-        const start = (currentPage - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-        const paginatedData = filteredData.slice(start, end);
-
-        paginatedData.forEach((row, i) => {
-            const indexInOriginalData = window.travelData.findIndex(d => d.timestamp === row.timestamp);
-            tbody.innerHTML += `
-                <tr>
-                    <td>${row.name}</td>
-                    <td>${formatDatePH(row.departureDate, false)}</td>
-                    <td>${formatDatePH(row.arrivalDate, false)}</td>
-                    <td>${formatDatePH(row.timestamp, true)}</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="previewFromHistory(${indexInOriginalData})">Preview</button>
-                    </td>
-                </tr>
-            `;
-        });
-    } else {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center">No matching travel orders found.</td></tr>`;
+        try {
+            await fetch(scriptURL, { method: 'POST', body: fd });
+            form.reset();
+            form.classList.remove('was-validated');
+            loadTravelHistory();
+            loadingModal.hide();
+            successModal.show();
+            responseDiv.innerHTML = `<div class="alert alert-success">Successfully Submitted!</div>`;
+        } catch (err) {
+            document.getElementById('response').innerHTML = `<div class="alert alert-danger">Submission failed. Please try again later.</div>`;
+            loadingModal.hide();
+        } finally {
+            submitBtn.disabled = false;
+            setTimeout(() => document.getElementById('response').innerHTML = '', 4000);
+        }
     }
-}
+
+    // Global variables for pagination
+    let currentPage = 1;
+    const rowsPerPage = 15;
+    let filteredData = [];
+
+    async function loadTravelHistory() {
+        const spinner = document.getElementById('history-spinner');
+        const tbody = document.querySelector('#historyTable tbody');
+        const paginationControls = document.getElementById('pagination-controls');
+
+        spinner.classList.remove('d-none');
+        tbody.innerHTML = '';
+        paginationControls.innerHTML = '';
+
+        try {
+            const response = await fetch(`${scriptURL}?read=1`);
+            const data = await response.json();
+
+            spinner.classList.add('d-none');
+            window.travelData = data;
+
+            if (data && data.length > 0) {
+                filterAndRenderTable();
+            } else {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center">No travel orders submitted yet.</td></tr>`;
+            }
+        } catch (error) {
+            console.error('Error fetching travel history:', error);
+            spinner.classList.add('d-none');
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Failed to load travel history.</td></tr>`;
+        }
+    }
+
+    function filterAndRenderTable() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const tbody = document.querySelector('#historyTable tbody');
+
+        // Filter the global data array based on search term
+        filteredData = window.travelData.filter(row => {
+            return row.name && row.name.toLowerCase().includes(searchTerm);
+        });
+
+        renderTable();
+        updatePagination();
+    }
+
+    function renderTable() {
+        const tbody = document.querySelector('#historyTable tbody');
+        tbody.innerHTML = '';
+
+        if (filteredData.length > 0) {
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const paginatedData = filteredData.slice(start, end);
+
+            paginatedData.forEach((row, i) => {
+                const indexInOriginalData = window.travelData.findIndex(d => d.timestamp === row.timestamp);
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${row.name}</td>
+                        <td>${formatDatePH(row.departureDate, false)}</td>
+                        <td>${formatDatePH(row.arrivalDate, false)}</td>
+                        <td>${formatDatePH(row.timestamp, true)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="previewFromHistory(${indexInOriginalData})">Preview</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        } else {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center">No matching travel orders found.</td></tr>`;
+        }
+    }
 
 function updatePagination() {
     const paginationControls = document.getElementById('pagination-controls');
     paginationControls.innerHTML = '';
 
     const pageCount = Math.ceil(filteredData.length / rowsPerPage);
-    if (pageCount <= 1) {
-        return;
+    if (pageCount <= 1) return;
+
+    const maxVisible = 6;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+    let endPage = startPage + maxVisible - 1;
+
+    if (endPage > pageCount) {
+        endPage = pageCount;
+        startPage = Math.max(1, endPage - maxVisible + 1);
     }
 
     let paginationHtml = `<ul class="pagination mb-0">`;
 
     // Previous button
-    paginationHtml += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-        <a class="page-link" href="#" onclick="changePage(event, ${currentPage - 1})">Previous</a>
-    </li>`;
+    paginationHtml += `
+        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="changePage(event, ${currentPage - 1})">&laquo; Prev</a>
+        </li>
+    `;
 
-    // Page number buttons
-    for (let i = 1; i <= pageCount; i++) {
-        paginationHtml += `<li class="page-item ${i === currentPage ? 'active' : ''}">
-            <a class="page-link" href="#" onclick="changePage(event, ${i})">${i}</a>
-        </li>`;
+    // Numbered pages (max 6 visible)
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHtml += `
+            <li class="page-item ${i === currentPage ? 'active' : ''}">
+                <a class="page-link" href="#" onclick="changePage(event, ${i})">${i}</a>
+            </li>
+        `;
     }
 
     // Next button
-    paginationHtml += `<li class="page-item ${currentPage === pageCount ? 'disabled' : ''}">
-        <a class="page-link" href="#" onclick="changePage(event, ${currentPage + 1})">Next</a>
-    </li>`;
+    paginationHtml += `
+        <li class="page-item ${currentPage === pageCount ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="changePage(event, ${currentPage + 1})">Next &raquo;</a>
+        </li>
+    `;
 
     paginationHtml += `</ul>`;
     paginationControls.innerHTML = paginationHtml;
 }
 
-function changePage(event, page) {
-    event.preventDefault();
-    if (page >= 1 && page <= Math.ceil(filteredData.length / rowsPerPage)) {
-        currentPage = page;
-        renderTable();
-        updatePagination();
+
+    function changePage(event, page) {
+        event.preventDefault();
+        if (page >= 1 && page <= Math.ceil(filteredData.length / rowsPerPage)) {
+            currentPage = page;
+            renderTable();
+            updatePagination();
+        }
     }
-}
 
-// Add event listener for dynamic filtering
-document.getElementById('searchInput').addEventListener('keyup', () => {
-    currentPage = 1; // Reset to the first page on new search
-    filterAndRenderTable();
-});
-                    /**
-                     * Formats an ISO date value to Philippine Standard Time (PST).
-                     * @param {string} isoValue - The ISO date string.
-                     * @param {boolean} withTime - If true, includes the time in the formatted string.
-                     * @returns {string} The formatted date string.
-                     */
-                     function formatDatePH(isoValue, withTime = true) {
-                // Use Intl.DateTimeFormat for a simpler, more robust solution.
-                const options = {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                  timeZone: 'Asia/Manila' // Set the correct timezone for the Philippines
-                };
+    document.getElementById('searchInput').addEventListener('keyup', () => {
+        currentPage = 1; // Reset to the first page on new search
+        filterAndRenderTable();
+    });
 
-                if (withTime) {
-                  options.hour = '2-digit';
-                  options.minute = '2-digit';
-                  options.hour12 = true; // Use 12-hour clock with AM/PM
-                }
+    function formatDatePH(isoValue, withTime = true) {
+        const options = {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            timeZone: 'Asia/Manila'
+        };
 
-                // Create a formatter and format the date directly
-                const formatter = new Intl.DateTimeFormat('en-PH', options);
-                const date = new Date(isoValue);
+        if (withTime) {
+            options.hour = '2-digit';
+            options.minute = '2-digit';
+            options.hour12 = true;
+        }
 
-                return formatter.format(date);
-}
-/**
- * Populates the form fields with data from a selected travel order in the history.
- * @param {number} index - The index of the travel order in the `travelData` array.
- */
- function previewFromHistory(index) {
-    const data = window.travelData[index];
+        const formatter = new Intl.DateTimeFormat('en-PH', options);
+        const date = new Date(isoValue);
 
-    for (const key in data) {
+        return formatter.format(date);
+    }
+function previewFromHistory(index) {
+    const record = window.travelData[index];
+
+    // Fill the form fields
+    for (const key in record) {
         const el = document.getElementById(key);
         if (!el) continue;
 
-        // This block of code is now fixed to handle dates correctly.
-        if (el.type === "date" && data[key]) {
-            // Create a date object from the stored data.
-            const localDate = new Date(data[key]);
-
-            // Extract the year, month, and day based on the browser's LOCAL timezone.
-            const year = localDate.getFullYear();
-            // getMonth() is 0-indexed (Jan=0), so we add 1.
-            // padStart ensures the month is two digits (e.g., "08" instead of "8").
-            const month = String(localDate.getMonth() + 1).padStart(2, '0');
-            const day = String(localDate.getDate()).padStart(2, '0');
-
-            // Set the input's value to the correctly formatted "YYYY-MM-DD" string.
-            el.value = `${year}-${month}-${day}`;
-            
+        if (el.type === "date" && record[key]) {
+            const localDate = new Date(record[key]);
+            const date = new Date(localDate.getTime() - (localDate.getTimezoneOffset() * 60000));
+            el.value = date.toISOString().substring(0, 10);
         } else {
-            el.value = data[key];
+            el.value = record[key];
         }
     }
-    // Call generatePreview with a flag to hide the submit button
-    generatePreview(false, true);
+
+    // Pass record (includes Timestamp) to preview
+    generatePreview(false, true, record);
 }
-                
-                    /**
-                     * Generates the HTML content for the travel order preview modal.
-                     */
-                     function generatePreview(showSubmitButton = true, showPrintButton = false) {
-    const data = {
+
+                    
+function generatePreview(showSubmitButton = true, showPrintButton = false, record = null) {
+    // If opened from history, use the record; otherwise, collect form inputs
+    const data = record || {
         name: document.getElementById('name').value,
         position: document.getElementById('position').value,
         divisionUnit: document.getElementById('divisionUnit').value,
@@ -729,306 +878,317 @@ document.getElementById('searchInput').addEventListener('keyup', () => {
         approved: document.getElementById('approved').value
     };
 
-    const isRecommendingApprovalNeeded = data.recommendingApproval.trim() !== '' && data.recommendingApproval.toUpperCase() !== 'NONE';
+    // ✅ Get timestamp from table record (handle various key names)
+// ✅ Ensure timestamp is correctly displayed for both new and historical records
+// ✅ Smart Timestamp Extractor
+// ✅ Get timestamp directly from Google Sheet data
+let timestamp = 'Pending';
+if (record) {
+    // Use your actual sheet column name (case-insensitive)
+    const possibleKeys = Object.keys(record);
+    const key = possibleKeys.find(k => k.toLowerCase().includes('time'));
+    if (key && record[key]) timestamp = record[key];
+}
 
-    const recommendingApprovalHTML = isRecommendingApprovalNeeded ? `
-        <td><strong>RECOMMENDING APPROVAL</strong></td>
-    ` : '';
-    const recommendingApprovalNameHTML = isRecommendingApprovalNeeded ? `
-        <td style="padding-top: 18px;"><u>${data.recommendingApproval}</u></td>
-    ` : '';
-    const recommendingApprovalPositionHTML = isRecommendingApprovalNeeded ? `
-        <td>Section/Division/Unit Head</td>
-    ` : '';
+// ✅ Format timestamp in PH time
+if (timestamp && timestamp !== 'Pending') {
+    try {
+        const dateObj = new Date(timestamp);
+        timestamp = new Intl.DateTimeFormat('en-PH', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+            timeZone: 'Asia/Manila'
+        }).format(dateObj);
+    } catch {
+        timestamp = 'Pending';
+    }
+}
 
+
+
+    // ✅ Generate QR code text and image
+   // ✅ Convert ISO date strings to readable date (no time)
+const formatToReadableDate = (isoStr) => {
+    try {
+        const d = new Date(isoStr);
+        return d.toLocaleDateString('en-PH', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            timeZone: 'Asia/Manila'
+        });
+    } catch {
+        return isoStr;
+    }
+};
+
+// ✅ Use formatted dates for QR text
+const qrText = `${data.name} | Destination - ${data.destination} | Departure - ${formatToReadableDate(data.departureDate)} | Arrival - ${formatToReadableDate(data.arrivalDate)} | Timestamp - ${timestamp}`;
+const qrURL = `https://quickchart.io/qr?text=${encodeURIComponent(qrText)}&size=170&margin=2`;
+
+    const isRecommendingApprovalNeeded =
+        data.recommendingApproval && data.recommendingApproval.trim() !== '' &&
+        data.recommendingApproval.toUpperCase() !== 'NONE';
+
+    const recommendingApprovalHTML = isRecommendingApprovalNeeded
+        ? `<td><strong>RECOMMENDING APPROVAL</strong></td>` : '';
+    const recommendingApprovalNameHTML = isRecommendingApprovalNeeded
+        ? `<td style="padding-top: 18px;"><u>${data.recommendingApproval}</u></td>` : '';
+    const recommendingApprovalPositionHTML = isRecommendingApprovalNeeded
+        ? `<td>Section/Division/Unit Head</td>` : '';
+
+    // === TRAVEL ORDER PREVIEW HTML ===
     const previewHTML = `
-        <div style="font-family: Arial, sans-serif; font-size: 10px; color: #000; padding: 30px;">
-            <table style="width: 100%; margin-bottom: 8px;">
+    <div style="font-family: Arial, sans-serif; font-size: 10px; color: #000; padding: 30px;">
+        <table style="width: 100%; margin-bottom: 8px;">
+            <tr>
+                <td style="width: 80px;">
+                    <img src="assets/denrlogo.png" alt="DENR Logo" style="height: 70px;" />
+                </td>
+                <td style="text-align: left; font-size: 11px; line-height: 1.2;">
+                    <div><strong>Republic of the Philippines</strong></div>
+                    <div><strong>Department of Environment and Natural Resources</strong></div>
+                    <div><strong>Community Environment and Natural Resources Office</strong></div>
+                    <div>Province of Quirino</div>
+                    <div>Andres Bonifacio, Diffun, Quirino, 3401</div>
+                    <div>Email Address: denr.diffun@gmail.com</div>
+                </td>
+            </tr>
+        </table>
+
+        <h4 style="text-align: center; text-decoration: underline; font-weight: bold; font-size: 12px; margin: 16px 0;">TRAVEL ORDER</h4>
+        <div style="text-align: center; margin-bottom: 8px;">(No. ______________________)</div>
+
+        <table style="width: 100%; margin-bottom: 8px; font-size: 10px;">
+            <tr><td><strong>Name:</strong> ${data.name}</td><td><strong>Salary:</strong></td></tr>
+            <tr><td><strong>Position:</strong> ${data.position}</td><td><strong>Div/Sec/Unit:</strong> ${data.divisionUnit}</td></tr>
+            <tr><td><strong>Departure Date:</strong> ${data.departureDate}</td><td><strong>Official Station:</strong> ${data.officialStation}</td></tr>
+            <tr><td><strong>Destination:</strong> ${data.destination}</td><td><strong>Arrival Date:</strong> ${data.arrivalDate}</td></tr>
+        </table>
+
+        <p style="margin: 8px 0;"><strong>Purpose:</strong><br>${data.purpose}</p>
+        <p style="margin: 8px 0;"><strong>Per Diems/Expenses Allowed:</strong> ${data.fundAppropriation}</p>
+        <p style="margin: 8px 0;"><strong>Remarks or special instructions:</strong><br>${data.remarks}</p>
+
+        <p style="margin: 8px 0;"><strong>CERTIFICATION:</strong><br>
+            This is to certify that the travel is necessary and is connected with the functions of the official/employee of this Division/Section/Unit.
+        </p>
+
+        <table style="width: 100%; margin-top: 0px; text-align: center; font-size: 10px;">
+            <tr>${recommendingApprovalHTML}<td><strong>APPROVED BY</strong></td></tr>
+            <tr>${recommendingApprovalNameHTML}<td style="padding-top: 18px;"><u>${data.approved}</u></td></tr>
+            <tr>${recommendingApprovalPositionHTML}<td>OIC, CENR Officer</td></tr>
+        </table>
+
+        <hr style="margin: 5px 0;">
+
+        <div style="text-align: center; font-weight: bold; font-size: 12px; margin-top: 16px;">AUTHORIZATION</div>
+        <p style="text-align: justify; font-size: 10px; margin-top: 8px;">
+            I hereby authorize the accountant to deduct the corresponding amount of the unliquidated cash advance
+            from succeeding salary for my failure to liquidate this travel within the prescribed thirty-day period upon return to my permanent official station pursuant to Item 5.1.3 COA Circular 97-002 dated February 10, 1997 and Sec. 16 EO No. 248 dated May 29, 1995.
+        </p>
+
+        <table style="width: 100%; margin-top: 0px; text-align: right; font-size: 10px;">
+            <tr><td><u>${data.name}</u></td></tr>
+            <tr><td><strong>Official/Employee</strong></td></tr>
+        </table>
+
+        <div style="text-align: center; font-weight: bold; font-size: 12px; margin-top: 16px;">CERTIFICATE OF APPEARANCE</div>
+        <p style="text-align: justify; font-size: 10px; margin-top: 8px;">
+            THIS IS TO CERTIFY that <u>${data.name}</u> personally appeared on the date and place indicated below:
+        </p>
+        <p style="text-align: justify; font-size: 10px; margin-top: 8px;">
+            This certification is issued upon request of Mr./Ms. <u>${data.name}</u> in compliance with standard auditing regulations provided for under <strong>Republic Act No. 3347</strong>, duly implemented by <strong>COA Circular No. 68-A</strong>.
+        </p>
+
+        <!-- ✅ FIXED TABLE STRUCTURE -->
+        <table style="width: 100%; border: 1px solid #000; border-collapse: collapse; margin-top: 8px; font-size: 10px;">
+            <thead>
                 <tr>
-                    <td style="width: 80px;">
-                        <img src="assets/denrlogo.png" alt="DENR Logo" style="height: 70px;" />
-                    </td>
-                    <td style="text-align: left; font-size: 11px; line-height: 1.2;">
-                        <div><strong>Republic of the Philippines</strong></div>
-                        <div><strong>Department of Environment and Natural Resources</strong></div>
-                        <div><strong>Community Environment and Natural Resources Office</strong></div>
-                        <div>Province of Quirino</div>
-                        <div>Andres Bonifacio, Diffun, Quirino, 3401</div>
-                        <div>Email Address: denr.diffun@gmail.com</div>
-                    </td>
+                    <th style="border: 1px solid #000; padding: 4px;">Control Number</th>
+                    <th style="border: 1px solid #000; padding: 4px;">Date of Execution</th>
+                    <th style="border: 1px solid #000; padding: 4px;">Place of Execution</th>
+                    <th style="border: 1px solid #000; padding: 4px;">Purpose</th>
+                    <th style="border: 1px solid #000; padding: 4px;">Certifying Officer</th>
                 </tr>
-            </table>
-            <h4 style="text-align: center; text-decoration: underline; font-weight: bold; font-size: 12px; margin: 16px 0;">TRAVEL ORDER</h4>
-            <div style="text-align: center; margin-bottom: 8px;">(No. ______________________)</div>
-            <table style="width: 100%; margin-bottom: 8px; font-size: 10px;">
-                <tr>
-                    <td><strong>Name:</strong> ${data.name}</td>
-                    <td><strong>Salary:</strong></td>
-                </tr>
-                <tr>
-                    <td><strong>Position:</strong> ${data.position}</td>
-                    <td><strong>Div/Sec/Unit:</strong> ${data.divisionUnit}</td>
-                </tr>
-                <tr>
-                    <td><strong>Departure Date:</strong> ${data.departureDate}</td>
-                    <td><strong>Official Station:</strong> ${data.officialStation}</td>
-                </tr>
-                <tr>
-                    <td><strong>Destination:</strong> ${data.destination}</td>
-                    <td><strong>Arrival Date:</strong> ${data.arrivalDate}</td>
-                </tr>
-            </table>
-            <p style="margin: 8px 0;"><strong>Purpose:</strong><br>${data.purpose}</p>
-            <p style="margin: 8px 0;"><strong>Per Diems/Expenses Allowed:</strong> ${data.fundAppropriation}</p>
-            <p style="margin: 8px 0;"><strong>Remarks or special instructions:</strong><br>${data.remarks}</p>
-            <p style="margin: 8px 0;"><strong>CERTIFICATION:</strong><br>
-                This is to certify that the travel is necessary and is connected with the functions of the official/employee of this Division/Section/Unit.
-            </p>
-            <table style="width: 100%; margin-top: 0px; text-align: center; font-size: 10px;">
-                <tr>
-                    ${recommendingApprovalHTML}
-                    <td><strong>APPROVED BY</strong></td>
-                </tr>
-                <tr>
-                    ${recommendingApprovalNameHTML}
-                    <td style="padding-top: 18px;"><u>${data.approved}</u></td>
-                </tr>
-                <tr>
-                    ${recommendingApprovalPositionHTML}
-                    <td>OIC, CENR Officer</td>
-                </tr>
-            </table>
-            <hr style="margin: 5px 0;">
-            <div style="text-align: center; font-weight: bold; font-size: 12px; margin-top: 16px;">AUTHORIZATION</div>
-            <p style="text-align: justify; font-size: 10px; margin-top: 8px;">
-                I hereby authorize the accountant to deduct the corresponding amount of the unliquidated cash advance
-                from succeding salary for my failure to liquidate this travel within the prescribed thirty-day period upon return to my permanent official station pursuant to Item 5.1.3 COA Circular 97-002 dated February 10, 1997 and Sec. 16 EO No. 248 dated May 29, 1995.
-            </p>
-            <table style="width: 100%; margin-top: 0px; text-align: right; font-size: 10px;">
-                <tr>
-                    <td><u>${data.name}</u></td>
-                </tr>
-                <tr>
-                    <td><strong>Official/Employee</strong></td>
-                </tr>
-            </table>
-            <div style="text-align: center; font-weight: bold; font-size: 12px; margin-top: 16px;">CERTIFICATE OF APPEARANCE</div>
-            <p style="text-align: justify; font-size: 10px; margin-top: 8px;">
-                THIS IS TO CERTIFY that <u>${data.name}</u> personally appeared on the date and place indicated below:
-            </p>
-            <p style="text-align: justify; font-size: 10px; margin-top: 8px;">
-                This certification is issued upon request of Mr./Ms. <u>${data.name}</u> in compliance with standard auditing regulations provided for under <strong>Republic Act No. 3347</strong>, duly implemented by <strong>COA Circular No. 68-A</strong>, for the purpose of establishing the evidence and duration of his/her appearance thereat, the truth of which is hereby vouchsafe and guaranteed by the undersigned.
-            </p>
-            <table style="width: 100%; border: 1px solid #000; border-collapse: collapse; margin-top: 8px; font-size: 10px;">
-                <thead>
+            </thead>
+            <tbody>
+                ${[1,2,3].map(() => `
                     <tr>
-                        <th style="border: 1px solid #000; padding: 4px;">Control Number</th>
-                        <th style="border: 1px solid #000; padding: 4px;">Date of Execution</th>
-                        <th style="border: 1px solid #000; padding: 4px;">Place of Execution</th>
-                        <th style="border: 1px solid #000; padding: 4px;">Purpose</th>
-                        <th style="border: 1px solid #000; padding: 4px;">Certifying Officer</th>
+                        <td style="border: 1px solid #000; padding: 4px; height: 15px;"></td>
+                        <td style="border: 1px solid #000; padding: 4px; height: 15px;"></td>
+                        <td style="border: 1px solid #000; padding: 4px; height: 15px;"></td>
+                        <td style="border: 1px solid #000; padding: 4px; height: 15px;"></td>
+                        <td style="border: 1px solid #000; padding: 4px; height: 15px;"></td>
                     </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="border: 1px solid #000; padding: 4px;"></td>
-                        <td style="border: 1px solid #000; padding: 4px;"></td>
-                        <td style="border: 1px solid #000; padding: 4px;"></td>
-                        <td style="border: 1px solid #000; padding: 4px;"></td>
-                        <td style="border: 1px solid #000; padding: 4px;"></td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #000; padding: 4px;"></td>
-                        <td style="border: 1px solid #000; padding: 4px;"></td>
-                        <td style="border: 1px solid #000; padding: 4px;"></td>
-                        <td style="border: 1px solid #000; padding: 4px;"></td>
-                        <td style="border: 1px solid #000; padding: 4px;"></td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #000; padding: 4px;"></td>
-                        <td style="border: 1px solid #000; padding: 4px;"></td>
-                        <td style="border: 1px solid #000; padding: 4px;"></td>
-                        <td style="border: 1px solid #000; padding: 4px;"></td>
-                        <td style="border: 1px solid #000; padding: 4px;"></td>
-                    </tr>
-                </tbody>
-            </table>
+                `).join('')}
+            </tbody>
+        </table>
+
+        <!-- QR Code Section -->
+        <div style="text-align: right; margin-top: 20px;">
+            <img src="${qrURL}" alt="QR Code" style="width: 160px; height: 160px; border: 1px solid #ccc; padding: 3px; background: #fff;">
+            <div style="font-size: 9px; color: #333;">Scan to verify details</div>
         </div>
+
+        <!-- Footer Note -->
+        <div style="
+            margin-top: 10px;
+            padding: 6px 8px;
+            text-align: center;
+            font-size: 9px;
+            font-weight: bold;
+            color: #2e7d32;
+            border-top: 1.5px solid #2e7d32;
+            background: #edf7ee;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        ">
+            🌿 This Travel Order Document is System Generated using CENRO-DIFFUN Travel Order Generator System 🌿
+        </div>
+    </div>
     `;
 
-    // Dynamically create the footer buttons based on the flags
+    // === Footer Buttons ===
     let footerButtons = '';
-
-    if (showPrintButton) {
-        footerButtons += `<button type="button" class="btn btn-primary" onclick="printPreview()">Print</button>`;
-    }
-    if (showSubmitButton) {
-        footerButtons += `<button type="button" class="btn btn-success" onclick="submitFromPreview()">Submit</button>`;
-    }
-    
-    // Add an ID to the close button for the event listener
-    footerButtons += `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closePreviewBtn">Close</button>`;
+    if (showPrintButton)
+        footerButtons += `<button class="btn btn-outline-denr" onclick="printPreview()">Print Travel Order</button>`;
+    if (showSubmitButton)
+        footerButtons += `<button type="button" class="btn btn-denr" id="submitFromPreviewBtn" onclick="submitFromPreview()">Submit</button>`;
+    footerButtons += `<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>`;
 
     document.getElementById('printablePreview').innerHTML = previewHTML;
     document.getElementById('previewModalFooter').innerHTML = footerButtons;
-    
     new bootstrap.Modal(document.getElementById('previewModal')).show();
 }
-                
-                    function formatDate(dateStr) {
-                        const months = ["January", "February", "March", "April", "May", "June",
-                            "July", "August", "September", "October", "November", "December"];
-                        const date = new Date(dateStr);
-                        return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
-                    }
-                
-                    /**
-                     * Prints the content of the preview modal.
-                     */
-                    function printPreview() {
-                        const content = document.getElementById('printablePreview').innerHTML;
-                        const printWindow = window.open('', '', 'width=800,height=1000');
-                        printWindow.document.write(`
-                            <html>
-                                <head>
-                                    <title>Print Travel Order</title>
-                                    <style>
-                                        body {
-                                            font-family: 'Poppins', sans-serif;
-                                            margin: 30px;
-                                            color: #000;
-                                            font-size: 14px;
-                                        }
-                                        table {
-                                            width: 100%;
-                                            border-collapse: collapse;
-                                        }
-                                        td, th {
-                                            padding: 5px;
-                                            vertical-align: top;
-                                        }
-                                        th {
-                                            text-align: center;
-                                        }
-                                    </style>
-                                </head>
-                                <body onload="window.print(); window.close();">
-                                    ${content}
-                                </body>
-                            </html>
-                        `);
-                        printWindow.document.close();
-                    }
-                
-                    /**
-                     * Toggles the dark mode on and off.
-                     */
-                    function toggleDarkMode() {
-                        const body = document.body;
-                        const icon = document.getElementById('darkModeIcon');
-                        body.classList.toggle('dark-mode');
-                        localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
-                        icon.setAttribute('data-lucide', body.classList.contains('dark-mode') ? 'sun' : 'moon');
-                        lucide.createIcons();
-                    }
-                    async function submitFromPreview() {
-    const previewModalElement = document.getElementById('previewModal');
-    const previewModal = bootstrap.Modal.getInstance(previewModalElement);
 
-    if (previewModal) {
-        // Add a one-time event listener for when the modal is completely hidden
-        previewModalElement.addEventListener('hidden.bs.modal', function onModalHidden() {
-            // Remove the listener to prevent it from firing again
-            previewModalElement.removeEventListener('hidden.bs.modal', onModalHidden);
-            
-            // Now, and only now, call the submitForm() function
-            submitForm();
-        });
 
-        // Hide the modal, which will trigger the 'hidden.bs.modal' event
-        previewModal.hide();
+                    
+    function formatDate(dateStr) {
+        const months = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"];
+        const date = new Date(dateStr);
+        return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
     }
-}
-
- async function submitForm() {
-    const form = document.getElementById('travelForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const responseDiv = document.getElementById('response'); // Get the response div
-
-    submitBtn.disabled = true;
-    const fd = new FormData(form);
-
-    try {
-        await fetch(scriptURL, { method: 'POST', body: fd });
-        
-        form.reset();
-        form.classList.remove('was-validated');
-        loadTravelHistory();
-        
-        // Display the success message in the response div
-        responseDiv.innerHTML = `<div class="alert alert-success">Successfully Submitted!</div>`;
-        
-    } catch (err) {
-        // Display the error message
-        responseDiv.innerHTML = `<div class="alert alert-danger">Submission failed. Please try again later.</div>`;
-    } finally {
-        submitBtn.disabled = false;
-        // The success or error message will disappear after 4 seconds
-        setTimeout(() => responseDiv.innerHTML = '', 4000);
-    }
-}
-                    // Event listener for when the DOM content is loaded.
-                    window.addEventListener('DOMContentLoaded', () => {
-                        if (localStorage.getItem('darkMode') === 'true') {
-                            document.body.classList.add('dark-mode');
-                            document.getElementById('darkModeIcon').setAttribute('data-lucide', 'sun');
-                        }
-                        lucide.createIcons();
-                        loadTravelHistory();
-                    });
-                
-                    // Event listener to convert all input and textarea values to uppercase.
-                    document.addEventListener('input', function(event) {
-                        if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
-                            event.target.value = event.target.value.toUpperCase();
-                        }
-                    });
-                
-                    // Event listeners to auto-resize the purpose and destination textareas.
-                    const purpose = document.getElementById('purpose');
-                    purpose.addEventListener('input', function() {
-                        this.style.height = 'auto';
-                        this.style.height = this.scrollHeight + 'px';
-                    });
-                
-                    const destination = document.getElementById('destination');
-                    destination.addEventListener('input', function() {
-                        this.style.height = 'auto';
-                        this.style.height = this.scrollHeight + 'px';
-                    });
-    document.addEventListener('DOMContentLoaded', () => {
-    const splashScreen = document.getElementById('splash-screen');
     
-    // Hide the splash screen after 3 seconds
-    setTimeout(() => {
-        if (splashScreen) {
-            splashScreen.classList.add('fade-out');
-            
-            // Remove the element from the DOM after the fade-out transition is complete
-            splashScreen.addEventListener('transitionend', () => {
-                splashScreen.remove();
+function printPreview() {
+    const content = document.getElementById('printablePreview').innerHTML;
+    const printWindow = window.open('', '', 'width=800,height=1000');
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Print Travel Order</title>
+                <style>
+                    @page {
+                        size: A4 portrait;
+                        margin: 0;
+                    }
+                    body {
+                        font-family: 'Poppins', sans-serif;
+                        margin: 0.5in; /* ✅ Matches @page margins visually in browser preview */
+                        color: #000;
+                        font-size: 14px;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                    td, th {
+                        padding: 5px;
+                        vertical-align: top;
+                    }
+                    th {
+                        text-align: center;
+                    }
+                </style>
+            </head>
+            <body onload="window.print(); window.close();">
+                ${content}
+            </body>
+        </html>
+    `);
+    printWindow.document.close();
+}
+
+    
+    async function submitFromPreview() {
+        const previewModalElement = document.getElementById('previewModal');
+        const previewModal = bootstrap.Modal.getInstance(previewModalElement);
+
+        if (previewModal) {
+            previewModalElement.addEventListener('hidden.bs.modal', function onModalHidden() {
+                previewModalElement.removeEventListener('hidden.bs.modal', onModalHidden);
+                submitForm();
             });
+            previewModal.hide();
         }
-    }, 3000); // 3000 milliseconds = 3 seconds
-});
-                
-                </script>
+    }
 
-             </html>
+    // === SIDEBAR TOGGLE SCRIPT ===
+    document.getElementById('sidebarToggle').addEventListener('click', event => {
+        event.preventDefault();
+        document.body.classList.toggle('sb-sidenav-toggled');
+    });
 
+    // === DOM CONTENT LOADED AND UTILITY FUNCTIONS ===
+    window.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+        loadTravelHistory();
 
+        // Event listener to scroll to sections when a sidebar link is clicked
+        document.querySelectorAll('#sidebar-wrapper a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const targetId = this.getAttribute('href');
+                if (targetId.startsWith('#')) {
+                    e.preventDefault();
+                    document.querySelector(targetId).scrollIntoView({ behavior: 'smooth' });
 
+                    // Update active state
+                    document.querySelectorAll('#sidebar-wrapper a').forEach(a => a.classList.remove('active'));
+                    this.classList.add('active');
 
+                    // Close sidebar on mobile after click
+                    if (window.innerWidth < 768) {
+                        document.body.classList.remove('sb-sidenav-toggled');
+                    }
+                }
+            });
+        });
+    });
 
+    document.addEventListener('input', function(event) {
+        if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+            event.target.value = event.target.value.toUpperCase();
+        }
+    });
 
+    const purpose = document.getElementById('purpose');
+    purpose.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+    });
 
+    const destination = document.getElementById('destination');
+    destination.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+    });
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const splashScreen = document.getElementById('splash-screen');
+        setTimeout(() => {
+            if (splashScreen) {
+                splashScreen.classList.add('fade-out');
+                splashScreen.addEventListener('transitionend', () => {
+                    splashScreen.remove();
+                });
+            }
+        }, 3000);
+    });
+</script>
+</body>
+</html>
