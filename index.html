@@ -1179,11 +1179,20 @@ function printPreview() {
         });
     });
 
+    // ✅ Fix: Prevent text reset when typing in textareas
+    let upperTimeout;
     document.addEventListener('input', function(event) {
         if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
-            event.target.value = event.target.value.toUpperCase();
+            clearTimeout(upperTimeout);
+            upperTimeout = setTimeout(() => {
+                const start = event.target.selectionStart;
+                const end = event.target.selectionEnd;
+                event.target.value = event.target.value.toUpperCase();
+                event.target.setSelectionRange(start, end);
+            }, 100);
         }
     });
+
 
     const purpose = document.getElementById('purpose');
     purpose.addEventListener('input', function() {
