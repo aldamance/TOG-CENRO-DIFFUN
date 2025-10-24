@@ -362,7 +362,6 @@
                                   <select class="form-select" id="name" name="name" required>
                                     <option value="" disabled selected>Select a name</option>
                                     <option value="Abello, Denver John T.">Abello, Denver John T.</option>
-                                    <option value="Acoba, Corazon S.">Acoba, Corazon S.</option>
                                     <option value="Acosta, Mharycris G.">Acosta, Mharycris G.</option>
                                     <option value="Agcaoili, Jaymark R.">Agcaoili, Jaymark R.</option>
                                     <option value="Aloni, Mary H.">Aloni, Mary H.</option>
@@ -389,7 +388,6 @@
                                     <option value="Lorete, Federico T.">Lorete, Federico T.</option>
                                     <option value="Lopez, Fredrick John P.">Lopez, Fredrick John P.</option>
                                     <option value="Mabborang, Corazon L.">Mabborang, Corazon L.</option>
-                                    <option value="Magat, Sebastian M.">Magat, Sebastian M.</option>
                                     <option value="Manglapuz, Ariel M.">Manglapuz, Ariel M.</option>
                                     <option value="Mariñas-Gatin, Jennilyn G.">Mariñas-Gatin, Jennilyn G.</option>
                                     <option value="Nahoy, Ngoy Ngoy D.">Nahoy, Ngoy Ngoy D.</option>
@@ -419,8 +417,15 @@
                                   <select class="form-select" id="position" name="position" required>
                                     <option value="" disabled selected>Select a position</option>
                                     <option value="Administrative Aide I">Administrative Aide I</option>
+                                    <option value="Administrative Aide II">Administrative Aide II</option>
+                                    <option value="Administrative Aide III">Administrative Aide III</option>
+                                    <option value="Administrative Aide IV">Administrative Aide IV</option>
+                                    <option value="Administrative Aide V">Administrative Aide V</option>
                                     <option value="Administrative Aide VI">Administrative Aide VI</option>
                                     <option value="Administrative Officer I">Administrative Officer I</option>
+                                    <option value="Administrative Officer II">Administrative Officer II</option>
+                                    <option value="Administrative Officer III">Administrative Officer III</option>
+                                    <option value="Administrative Officer IV">Administrative Officer IV</option>
                                     <option value="C/Administrative Aide/Driver">C/Administrative Aide/Driver</option>
                                     <option value="C/Data Management Officer">C/Data Management Officer</option>
                                     <option value="C/Forester">C/Forester</option>
@@ -430,17 +435,20 @@
                                     <option value="C/Park Ranger">C/Park Ranger</option>
                                     <option value="C/Utility Worker">C/Utility Worker</option>
                                     <option value="C/Planning Support Staff">C/Planning Support Staff</option>
-                                    <option value="Cartographer I">Cartographer I</option>
+                                    <option value="Credit Officer I">Credit Officer I</option>
+                                    <option value="Credit Officer II">Credit Officer II</option>
                                     <option value="Ecosystems Management Specialist II">Ecosystems Management Specialist I</option>
                                     <option value="Ecosystems Management Specialist II">Ecosystems Management Specialist II</option>
+                                    <option value="Engineer I">Engineer I</option>
                                     <option value="Engineer II">Engineer II</option>
+                                    <option value="Engineer III">Engineer III</option>
                                     <option value="Forester I">Forester I</option>
-                                    <option value="Forester I">Forester II</option>
+                                    <option value="Forester II">Forester II</option>
                                     <option value="Forester III">Forester III</option>
                                     <option value="Forest Ranger">Forest Ranger</option>
                                     <option value="Forest Technician I">Forest Technician I</option>
                                     <option value="Forest Technician II">Forest Technician II</option>
-                                    <option value="IT Support Staff">IT Support Staff</option>
+                                    <option value="IT Technical Support Staff">IT Technical Support Staff</option>
                                     <option value="Laborer I (CTI)">Laborer I (CTI)</option>
                                     <option value="Lams Encoder">Lams Encoder</option>
                                     <option value="Land Management Examiner">Land Management Examiner</option>
@@ -450,6 +458,9 @@
                                     <option value="Land Mgt. Inspector">Land Mgt. Inspector</option>
                                     <option value="Park Maintenance Foreman">Park Maintenance Foreman</option>
                                     <option value="Park Ranger">Park Ranger</option>
+                                    <option value="Records Officer I">Records Officer I</option>
+                                    <option value="Records Officer II">Records Officer II</option>
+                                    <option value="Records Officer III">Records Officer III</option>
                                     <option value="Senior Ecosystems Management Specialist">Senior Ecosystems Management Specialist</option>
                                     <option value="Special Investigator I">Special Investigator I</option>
                                     <option value="Special Investigator II">Special Investigator II</option>
@@ -484,17 +495,21 @@
                                   <label for="arrivalDate" class="form-label">Arrival Date</label>
                                   <input type="date" class="form-control" id="arrivalDate" name="arrivalDate" required />
                                 </div>
+                  <div class="col-md-4">
+                    <label for="destination" class="form-label">Destination</label>
+                    <textarea class="form-control" id="destination" name="destination" rows="2"
+                              required placeholder="e.g. TUGUEGARAO CITY, CAGAYAN"
+                              data-bs-toggle="tooltip" data-bs-placement="top"
+                              title="Special characters like the single quote ('), double quote ('') and backslash (\) are not allowed."></textarea>
+                  </div>
 
-                                <div class="col-md-4">
-                                  <label for="destination" class="form-label">Destination</label>
-                                  <textarea class="form-control" id="destination" name="destination" rows="2"
-                                            required placeholder="e.g. TUGUEGARAO CITY, CAGAYAN"></textarea>
-                                </div>
-                                <div class="col-md-4">
-                                  <label for="purpose" class="form-label">Purpose</label>
-                                  <textarea class="form-control" id="purpose" name="purpose" rows="2"
-                                            required placeholder="ENTER PURPOSE OF TRAVEL..."></textarea>
-                                </div>
+                  <div class="col-md-4">
+                    <label for="purpose" class="form-label">Purpose</label>
+                    <textarea class="form-control" id="purpose" name="purpose" rows="2"
+                              required placeholder="ENTER PURPOSE OF TRAVEL..."
+                              data-bs-toggle="tooltip" data-bs-placement="top"
+                              title="Special characters like the single quote ('), double quote ('') and backslash (\) are not allowed."></textarea>
+                  </div>
                                 <div class="col-md-4">
                                   <label for="fundAppropriation" class="form-label">Fund Appropriation</label>
                                   <select class="form-select" id="fundAppropriation" name="fundAppropriation" required>
@@ -513,7 +528,7 @@
                                     <option value="JENNIFER O. DAMANSE, RPF">JENNIFER O. DAMANSE, RPF</option>
                                     <option value="JUNE M. LAZARO, RPF">JUNE M. LAZARO, RPF</option>
                                     <option value="SUSAN D. PICO">SUSAN D. PICO</option>
-                                    <option value="FLORIDA BLANCA S. OCAMPO">FLORIDA BLANCA S. OCAMPO</option>
+                                    <option value="FLORIDA BLANCA S. OCAMPO">FLORIDA BLANCA S. OCAMPO, RPF</option>
                                     <option value="">NONE</option>
                                   </select>
                                 </div>
@@ -1179,19 +1194,39 @@ function printPreview() {
         });
     });
 
-    // ✅ Fix: Prevent text reset when typing in textareas
-    let upperTimeout;
-    document.addEventListener('input', function(event) {
-        if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
-            clearTimeout(upperTimeout);
-            upperTimeout = setTimeout(() => {
-                const start = event.target.selectionStart;
-                const end = event.target.selectionEnd;
-                event.target.value = event.target.value.toUpperCase();
-                event.target.setSelectionRange(start, end);
-            }, 100);
-        }
-    });
+// ✅ MODIFIED SCRIPT BLOCK
+let upperTimeout;
+document.addEventListener('input', function(event) {
+    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+        clearTimeout(upperTimeout);
+        
+        upperTimeout = setTimeout(() => {
+            const start = event.target.selectionStart;
+            const end = event.target.selectionEnd;
+            let value = event.target.value;
+
+            // ⛔ Filter out the disallowed special characters
+            value = value.replace(/['"\\]/g, ''); 
+
+            event.target.value = value.toUpperCase();
+            event.target.setSelectionRange(start, end);
+        }, 100);
+    }
+});
+// === Add this code near the end of your existing <script> block ===
+
+window.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+    loadTravelHistory();
+
+    // ... (existing sidebar and other listeners) ...
+
+    // ✅ NEW: Initialize Bootstrap Tooltips
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    
+    // ... (existing splash screen logic) ...
+});
 
 
     const purpose = document.getElementById('purpose');
