@@ -877,6 +877,25 @@ function generatePreview(showSubmitButton = true, showPrintButton = false, recor
         recommendingApproval: document.getElementById('recommendingApproval').value,
         approved: document.getElementById('approved').value
     };
+    // ✅ Fix ISO date format (from history record)
+if (record) {
+    const fixDate = (d) => {
+        try {
+            const dateObj = new Date(d);
+            return dateObj.toLocaleDateString('en-PH', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                timeZone: 'Asia/Manila'
+            });
+        } catch {
+            return d;
+        }
+    };
+    data.departureDate = fixDate(record.departureDate);
+    data.arrivalDate = fixDate(record.arrivalDate);
+}
+
 
     // ✅ Get timestamp from table record (handle various key names)
 // ✅ Ensure timestamp is correctly displayed for both new and historical records
