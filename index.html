@@ -542,7 +542,7 @@
                   
                               <div class="d-flex justify-content-center gap-3 mt-4"> <button type="submit" class="btn btn-denr btn-lg" id="submitBtn">
                                     <i data-lucide="square-arrow-right" class="me-2" style="width: 1.1em; height: 1.1em;"></i>
-                                    Preview & Submit
+                                    Submit
                                 </button>
                               </div>
                               <div id="response" class="mt-3 text-center"></div>
@@ -590,6 +590,24 @@
                         
                         <div class="d-flex justify-content-center mt-4" id="pagination-controls">
                         </div>
+                        <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title" id="confirmationModalLabel">Preview Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center pt-0">
+                <i data-lucide="file-text" class="text-denr mb-3" style="width: 32px; height: 32px;"></i>
+                <p class="h6">Do you want to preview your Travel Order?</p>
+            </div>
+            <div class="modal-footer d-flex justify-content-center border-0 pt-0 gap-2">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No, Submit Directly</button>
+                <button type="button" class="btn btn-denr" id="confirmPreviewBtn">Yes, Preview</button>
+            </div>
+        </div>
+    </div>
+</div>
                     </div>
                 </div>
             </div>
@@ -650,28 +668,51 @@
 
     const scriptURL = 'https://script.google.com/macros/s/AKfycbxqI83J6J-QT6WCucHdWYhhzKW6OQEZ2Xs7UPqYjZO3j10oJ7dbWKyBbXe-dl7zBJccmw/exec';
 
-    document.getElementById('travelForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const form = e.target;
-        if (!form.checkValidity()) {
-            form.classList.add('was-validated');
-            return;
-        }
+document.getElementById('travelForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        return;
+    }
 
-        const depDate = new Date(document.getElementById('departureDate').value);
-        const arrDate = new Date(document.getElementById('arrivalDate').value);
-        if (arrDate < depDate) {
-            alert("Arrival date must not be earlier than Departure date.");
-            return;
-        }
+    const depDate = new Date(document.getElementById('departureDate').value);
+    const arrDate = new Date(document.getElementById('arrivalDate').value);
+    if (arrDate < depDate) {
+        alert("Arrival date must not be earlier than Departure date.");
+        return;
+    }
 
-        const shouldPreview = confirm("Do you want to preview your Travel Order?");
-        if (shouldPreview) {
-            generatePreview(true, false);
-        } else {
-            submitForm();
-        }
+    // Show the modern Bootstrap confirmation modal instead of native confirm()
+    const confirmationModalElement = document.getElementById('confirmationModal');
+    const confirmationModal = new bootstrap.Modal(confirmationModalElement);
+    
+    // Set up button handlers inside the modal
+    const confirmPreviewBtn = document.getElementById('confirmPreviewBtn');
+    const submitDirectlyBtn = confirmationModalElement.querySelector('.modal-footer button:first-child');
+    
+    // Clear previous event listeners to prevent multiple firings
+    const newConfirmPreviewBtn = confirmPreviewBtn.cloneNode(true);
+    confirmPreviewBtn.parentNode.replaceChild(newConfirmPreviewBtn, confirmPreviewBtn);
+    
+    const newSubmitDirectlyBtn = submitDirectlyBtn.cloneNode(true);
+    submitDirectlyBtn.parentNode.replaceChild(newSubmitDirectlyBtn, submitDirectlyBtn);
+    
+    // Handle "Yes, Preview" (will call generatePreview)
+    newConfirmPreviewBtn.addEventListener('click', () => {
+        confirmationModal.hide();
+        // true = show submit button, false = don't show print button, null = not from history
+        generatePreview(true, false, null); 
     });
+    
+    // Handle "No, Submit Directly" (will call submitForm)
+    newSubmitDirectlyBtn.addEventListener('click', () => {
+        confirmationModal.hide();
+        submitForm();
+    });
+
+    confirmationModal.show();
+});
 
     async function submitForm() {
         const form = document.getElementById('travelForm');
@@ -765,7 +806,7 @@
                         <td>${formatDatePH(row.arrivalDate, false)}</td>
                         <td>${formatDatePH(row.timestamp, true)}</td>
                         <td>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="previewFromHistory(${indexInOriginalData})">Preview</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="previewFromHistory(${indexInOriginalData})">Preview & Print</button>
                         </td>
                     </tr>
                 `;
