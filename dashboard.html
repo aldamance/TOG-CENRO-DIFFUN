@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TOG Dashboard</title>
+    <title>TOG Dashboard | CENRO Diffun</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="assets/logo1.png" type="image/svg+xml" />
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -17,9 +19,9 @@
             --card-bg: #ffffff;
             --table-header-bg: #dcfce7;
             --table-row-hover-bg: #ecfdf5;
-            --sidebar-bg: #064e3b;
+            --sidebar-bg: #064e3b; /* Dark Green */
             --sidebar-hover-bg: #047857;
-            --accent-color: #34d399;
+            --accent-color: #34d399; /* Bright Green */
             --primary-text-color: #ffffff;
             --secondary-text-color: #e2e8f0;
         }
@@ -74,6 +76,7 @@
             flex-direction: column;
             padding: 1rem;
             border-right: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 90;
         }
         .sidebar-logo {
             padding: 1rem;
@@ -130,8 +133,55 @@
             left: 15rem;
             z-index: 1000;
             transition: left 0.3s ease-in-out;
+            border: none;
+            background-color: var(--sidebar-bg);
+            color: var(--primary-text-color);
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        /* Completely Hidden Sidebar State */
+
+        /* Mobile-specific Sidebar Behavior */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -15rem; /* Hidden off-screen */
+                height: 100%;
+                z-index: 1050; /* Above main content */
+            }
+            .wrapper.sidebar-hidden .sidebar {
+                left: 0; /* Shown on screen */
+                width: 15rem;
+            }
+            .wrapper.sidebar-hidden #sidebar-toggle-btn {
+                left: 15.5rem; /* Adjusted position when open */
+                background-color: var(--accent-color);
+                color: var(--text-color);
+            }
+            #sidebar-toggle-btn {
+                left: 0.5rem;
+            }
+            .wrapper.sidebar-hidden #chevron-left-icon {
+                display: block;
+            }
+            .wrapper.sidebar-hidden #chevron-right-icon {
+                display: none;
+            }
+            #chevron-right-icon {
+                display: block;
+            }
+            main {
+                padding-left: 0 !important; /* No offset padding on small screens */
+            }
+        }
+
+        /* Desktop-specific Hidden Sidebar State */
+        .wrapper:not(.sidebar-hidden) #chevron-right-icon {
+             display: none; /* Hide right icon when sidebar is visible on desktop */
+        }
         .wrapper.sidebar-hidden .sidebar {
             width: 0;
             padding: 0;
@@ -146,21 +196,28 @@
         .wrapper.sidebar-hidden #chevron-right-icon {
             display: block;
         }
-        #chevron-right-icon {
-            display: none;
-        }
+
 
         /* Dashboard Content Styling */
         .card-custom {
             background-color: var(--card-bg);
             color: var(--text-color);
             border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            border: none;
         }
         .table-header {
             background-color: var(--table-header-bg);
         }
         .table-row:hover {
             background-color: var(--table-row-hover-bg);
+        }
+        .table-row td {
+            cursor: pointer;
+        }
+        .table-responsive-custom {
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
         }
 
         /* Description cell styles */
@@ -171,7 +228,7 @@
 
         .description-content {
             display: inline-block;
-            max-width: calc(100% - 25px); /* Leave space for the button */
+            max-width: calc(100% - 25px); 
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -187,10 +244,7 @@
             cursor: pointer;
             vertical-align: middle;
             margin-left: 5px;
-        }
-        
-        .table-row td {
-            cursor: pointer;
+            font-size: 0.8rem;
         }
 
         .tooltip-custom {
@@ -202,92 +256,146 @@
             text-align: left;
             word-wrap: break-word;
         }
+
+        /* Table Header Sorting Indicator */
+        .sortable {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .sortable:hover {
+            opacity: 0.8;
+        }
+
+        .sort-indicator {
+            margin-left: 5px;
+            font-size: 0.7em;
+        }
+        
+        .history-table th:last-child {
+            border-top-right-radius: 0.5rem;
+        }
+        .history-table th:first-child {
+            border-top-left-radius: 0.5rem;
+        }
     </style>
 </head>
-<body class="bg-light">
+<body>
 
     <div id="splash-screen">
-        <img src="assets/logo2.png" alt="CENRO DIFFUN Logo" class="mb-2" style="width: 5rem; height: 5rem;">
-        <h1 class="h3 fw-bold text-white">CENRO DIFFUN</h1>
-        <p class="mt-1 fs-6 fw-light text-white">TRAVEL ORDER GENERATOR - DASHBOARD</p>
+        <div class="spinner-border text-white mb-3" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <h1 class="h3 fw-bold">TOG Dashboard</h1>
+        <p class="h6">CENRO Diffun</p>
     </div>
 
     <div id="main-content" class="wrapper d-flex min-vh-100">
-        <aside id="sidebar" class="sidebar d-flex flex-column p-3">
-            <div class="sidebar-logo text-center">
-                <img src="assets/logo2.png" alt="CENRO DIFFUN Logo" class="mb-1">
-                <h1 class="fw-bold sidebar-text">CENRO</h1>
-                <h1 class="fw-bold sidebar-text">DIFFUN</h1>
+        <div class="sidebar d-none d-md-flex flex-shrink-0">
+            <div class="sidebar-logo">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/DENR_Logo.svg/200px-DENR_Logo.svg.png" alt="DENR Logo" class="rounded-circle">
+                <h1>CENRO Diffun</h1>
+                <p>Travel Order Generator</p>
             </div>
-            <nav class="nav flex-column mt-3">
-                <a href="#dashboard-section" class="sidebar-link mb-2 active">
-                    <span data-lucide="layout-dashboard" style="width: 1.25rem; height: 1.25rem;"></span>
+            
+            <nav class="flex-grow-1">
+                <a href="#dashboard-section" class="sidebar-link active" data-section="dashboard-section">
+                    <i data-lucide="layout-dashboard"></i>
                     <span class="sidebar-text">Dashboard</span>
                 </a>
-                <a href="#history-section" class="sidebar-link">
-                    <span data-lucide="history" style="width: 1.25rem; height: 1.25rem;"></span>
-                    <span class="sidebar-text">History</span>
+                <a href="#chart-section" class="sidebar-link" data-section="chart-section">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span class="sidebar-text">Charts & Analytics</span>
+                </a>
+                <a href="#history-section" class="sidebar-link" data-section="history-section">
+                    <i data-lucide="history"></i>
+                    <span class="sidebar-text">Travel History</span>
                 </a>
             </nav>
-        </aside>
 
-        <main class="flex-grow-1 p-4 p-lg-5">
-            <button id="sidebar-toggle-btn" class="btn btn-light shadow-sm d-md-block d-none">
-                <span id="chevron-left-icon" data-lucide="chevron-left" style="width: 1.25rem; height: 1.25rem;"></span>
-                <span id="chevron-right-icon" data-lucide="chevron-right" style="width: 1.25rem; height: 1.25rem;"></span>
-            </button>
+             <a href="https://docs.google.com/forms/d/e/1FAIpQLSe3UaH9W4Q8D4xXoO9u7Z_g_gW7s7O4Yl2dE9w/viewform" target="_blank" class="sidebar-link mt-auto">
+                <i data-lucide="plus-circle"></i>
+                <span class="sidebar-text">New Travel Order</span>
+            </a>
+        </div>
+        <button id="sidebar-toggle-btn" class="btn">
+            <i data-lucide="chevron-left" id="chevron-left-icon"></i>
+            <i data-lucide="chevron-right" id="chevron-right-icon"></i>
+        </button>
 
+        <main class="flex-grow-1 p-3 p-md-4">
             <header class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="h4 fw-bold">Dashboard</h2>
+                <h2 class="h3 fw-bold text-success">TOG Dashboard Overview</h2>
+                <div class="d-flex align-items-center">
+                    <i data-lucide="user" class="me-2 text-muted"></i>
+                    <span class="d-none d-md-inline">Welcome, Admin</span>
+                </div>
             </header>
-
-            <section id="dashboard-section" class="mb-4">
-                <div class="row g-3">
-                    <div class="col-12 col-md-6">
-                        <div class="card card-custom p-3 shadow-lg border">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <div class="text-secondary fw-light" style="font-size: 0.75rem;">Total Travel Orders</div>
-                                    <div id="totalOrdersCount" class="h3 fw-bold mt-1">...</div>
+            
+            <section id="dashboard-section" class="mb-5">
+                <div class="row g-4">
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <div class="card card-custom p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="p-3 bg-success rounded-circle me-3">
+                                    <i data-lucide="send" class="text-white" style="width: 1.5rem; height: 1.5rem;"></i>
                                 </div>
-                                <span data-lucide="plane" class="text-success" style="width: 2rem; height: 2rem;"></span>
+                                <div>
+                                    <p class="text-uppercase text-muted mb-1 small fw-medium">Total Travel Orders</p>
+                                    <h4 class="mb-0 fw-bold" id="totalOrdersCount">0</h4>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6">
-                        <div class="card card-custom p-3 shadow-lg border">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <div class="text-secondary fw-light" style="font-size: 0.75rem;">This Month's Orders</div>
-                                    <div id="monthlyOrdersCount" class="h3 fw-bold mt-1">...</div>
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <div class="card card-custom p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="p-3 bg-warning rounded-circle me-3">
+                                    <i data-lucide="calendar" class="text-dark" style="width: 1.5rem; height: 1.5rem;"></i>
                                 </div>
-                                <span data-lucide="calendar-check" class="text-success" style="width: 2rem; height: 2rem;"></span>
+                                <div>
+                                    <p class="text-uppercase text-muted mb-1 small fw-medium">This Month's Orders</p>
+                                    <h4 class="mb-0 fw-bold" id="monthlyOrdersCount">0</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-4">
+                        <div class="card card-custom p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="p-3 bg-info rounded-circle me-3">
+                                    <i data-lucide="user-plus" class="text-dark" style="width: 1.5rem; height: 1.5rem;"></i>
+                                </div>
+                                <div>
+                                    <p class="text-uppercase text-muted mb-1 small fw-medium">Active Personnel</p>
+                                    <h4 class="mb-0 fw-bold">--</h4>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
             
-            <section id="chart-section" class="mt-4">
+            <hr class="text-success my-5">
+
+            <section id="chart-section" class="mb-5">
+                <h3 class="fw-bold mb-4">Analytics</h3>
                 <div class="row g-4">
-                    <div class="col-lg-6">
-                        <div class="card card-custom p-3 shadow-lg border h-100">
-                            <h3 class="h5 fw-bold mb-3">Travel Orders per Month</h3>
+                    <div class="col-12 col-xl-6">
+                        <div class="card card-custom p-4">
+                            <h5 class="card-title fw-bold mb-3">Orders Over Last 12 Months</h5>
                             <div style="height: 300px;">
                                 <canvas id="monthlyChart"></canvas>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="card card-custom p-3 shadow-lg border h-100">
+                    <div class="col-12 col-xl-6">
+                        <div class="card card-custom p-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h3 class="h5 fw-bold mb-0">Travel Orders by Division</h3>
-                                <div class="d-flex align-items-center gap-2">
-                                    <label for="monthFilter" class="form-label mb-0 small">Filter by Month:</label>
-                                    <select id="monthFilter" class="form-select form-select-sm" onchange="createDivisionChart()">
-                                        <option value="all">All Months</option>
+                                <h5 class="card-title fw-bold mb-0">Orders by Division/Unit</h5>
+                                <select id="monthFilter" class="form-select form-select-sm w-auto" onchange="createDivisionChart()">
+                                    <option value="all">All Months</option>
                                     </select>
-                                </div>
                             </div>
                             <div style="height: 300px;">
                                 <canvas id="divisionChart"></canvas>
@@ -297,27 +405,32 @@
                 </div>
             </section>
 
-            <section id="history-section" class="mt-4">
-                <div class="card card-custom p-3 shadow-lg border">
-                    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-                        <h3 class="h5 fw-bold">Travel History</h3>
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="dropdown">
-                                <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" id="columnDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span data-lucide="eye" style="width: 1rem; height: 1rem;"></span>
-                                    Show/Hide Columns
-                                </button>
-                                <ul id="column-toggle-dropdown" class="dropdown-menu p-2" aria-labelledby="columnDropdown">
-                                    </ul>
-                            </div>
-                            <input type="text" id="searchBox" onkeyup="filterHistoryTable()" placeholder="Search..." class="form-control form-control-sm">
+            <hr class="text-success my-5">
+
+            <section id="history-section" class="mb-5">
+                <h3 class="fw-bold mb-4">Travel History</h3>
+                
+                <div class="card card-custom p-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
+                        <div class="input-group mb-3 mb-md-0 w-100 w-md-auto me-md-3">
+                            <span class="input-group-text bg-success text-white" id="search-addon"><i data-lucide="search" style="width: 1.25rem;"></i></span>
+                            <input type="text" class="form-control" id="searchBox" onkeyup="filterHistoryTable()" placeholder="Search Name, Division, Destination, or Purpose...">
+                        </div>
+                        
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i data-lucide="columns-3" class="me-1" style="width: 1.25rem;"></i> Columns
+                            </button>
+                            <ul class="dropdown-menu p-3" id="column-toggle-dropdown" style="max-height: 300px; overflow-y: auto;">
+                                </ul>
                         </div>
                     </div>
-                    <div class="table-responsive rounded-3 position-relative">
-                        <table id="historyTable" class="table table-hover mb-0">
-                            <thead class="table-header">
+
+                    <div class="table-responsive table-responsive-custom">
+                        <table class="table table-sm table-hover mb-0 history-table" id="historyTable">
+                            <thead class="table-header sticky-top">
                                 <tr>
-                                    <th class="py-2 text-nowrap text-uppercase">Name</th>
+                                    <th class="py-2 text-nowrap text-uppercase sortable" data-sort-col="name">Name <span class="sort-indicator"></span></th>
                                     <th class="py-2 text-nowrap text-uppercase">Position</th>
                                     <th class="py-2 text-nowrap text-uppercase">Division</th>
                                     <th class="py-2 text-nowrap text-uppercase">Official Station</th>
@@ -325,22 +438,28 @@
                                     <th class="py-2 text-nowrap text-uppercase">Destination</th>
                                     <th class="py-2 text-nowrap text-uppercase">Arrival Date</th>
                                     <th class="py-2 text-nowrap text-uppercase">Purpose</th>
-                                    <th class="py-2 text-nowrap text-uppercase rounded-top-end">Submitted On</th>
+                                    <th class="py-2 text-nowrap text-uppercase sortable active" data-sort-col="timestamp">Submitted On <span class="sort-indicator"></span></th>
                                 </tr>
                             </thead>
                             <tbody id="history-table-body">
-                            </tbody>
+                                </tbody>
                         </table>
                     </div>
-                    <div id="pagination-container" class="mt-3 d-flex justify-content-center align-items-center gap-2 small">
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="text-muted small">Showing <span id="startEntry">1</span> to <span id="endEntry">15</span> of <span id="totalEntries">0</span> entries</div>
+                        <div class="btn-group" role="group" id="pagination-container">
+                            </div>
                     </div>
                 </div>
             </section>
-        </main>
-    </div>
 
+        </main>
+        </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
+        // Replace this with your actual Google Apps Script URL
         const scriptURL = 'https://script.google.com/macros/s/AKfycbxqI83J6J-QT6WCucHdWYhhzKW6OQEZ2Xs7UPqYjZO3j10oJ7dbWKyBbXe-dl7zBJccmw/exec';
         
         let travelData = [];
@@ -350,19 +469,27 @@
         const maxTextLength = 40;
         let monthlyChart;
         let divisionChart;
-    
+
+        // Default sort state: Newest submission first
+        let currentSort = {
+            column: 'timestamp',
+            direction: 'desc' 
+        };
+
         /**
          * Loads the travel history from the Google Apps Script endpoint and populates the dashboard.
          */
         async function loadDashboardData() {
             const tbody = document.getElementById('history-table-body');
             tbody.innerHTML = `<tr><td colspan="9" class="text-center py-2 text-muted">Loading data...</td></tr>`;
-    
+
             try {
                 const response = await fetch(`${scriptURL}?read=1`);
                 travelData = await response.json();
                 
                 if (travelData && travelData.length > 0) {
+                    // Apply initial sort
+                    sortData(travelData, currentSort.column, currentSort.direction);
                     filteredData = travelData;
                     updateSummaryCards(travelData);
                     setupColumnToggle();
@@ -370,6 +497,7 @@
                     createMonthlyChart(travelData);
                     populateMonthFilter(travelData);
                     createDivisionChart(travelData);
+                    setupSortableHeaders(); // Setup sorting handlers
                 } else {
                     tbody.innerHTML = `<tr><td colspan="9" class="text-center py-2 text-muted">No travel orders submitted yet.</td></tr>`;
                     updateSummaryCards([]);
@@ -379,7 +507,86 @@
                 tbody.innerHTML = `<tr><td colspan="9" class="text-center py-2 text-danger">Failed to load data.</td></tr>`;
             }
         }
-    
+
+        /**
+         * Sets up click handlers for sortable table headers.
+         */
+        function setupSortableHeaders() {
+            const headers = document.querySelectorAll('#historyTable th[data-sort-col]');
+            headers.forEach(header => {
+                // Remove any existing listener to prevent duplicates
+                header.removeEventListener('click', handleSortClick);
+                header.addEventListener('click', handleSortClick);
+            });
+            // Apply initial visual sort indicator
+            updateSortIndicators();
+        }
+
+        /**
+         * Handles the click event on a sortable header.
+         */
+        function handleSortClick(e) {
+            const column = e.currentTarget.getAttribute('data-sort-col');
+            
+            let newDirection = 'asc';
+            if (currentSort.column === column) {
+                // Toggle direction if same column is clicked
+                newDirection = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            }
+
+            currentSort = { column: column, direction: newDirection };
+            
+            // Apply sort to the currently filtered data
+            sortData(filteredData, column, newDirection);
+            currentPage = 1;
+            setupPagination(filteredData);
+            updateSortIndicators();
+        }
+
+        /**
+         * Sorts the data array in place.
+         */
+        function sortData(data, column, direction) {
+            data.sort((a, b) => {
+                let aValue = a[column];
+                let bValue = b[column];
+                
+                // Treat timestamp and date fields as numbers for proper sorting
+                if (column === 'timestamp' || column.includes('Date')) {
+                    aValue = new Date(aValue).getTime();
+                    bValue = new Date(bValue).getTime();
+                } else if (typeof aValue === 'string') {
+                    aValue = aValue.toUpperCase();
+                    bValue = bValue.toUpperCase();
+                }
+
+                if (aValue < bValue) {
+                    return direction === 'asc' ? -1 : 1;
+                }
+                if (aValue > bValue) {
+                    return direction === 'asc' ? 1 : -1;
+                }
+                return 0;
+            });
+        }
+
+        /**
+         * Updates the visual indicator on the sorted column header.
+         */
+        function updateSortIndicators() {
+            const headers = document.querySelectorAll('#historyTable th[data-sort-col]');
+            headers.forEach(header => {
+                const indicator = header.querySelector('.sort-indicator');
+                header.classList.remove('active');
+                indicator.textContent = '';
+
+                if (header.getAttribute('data-sort-col') === currentSort.column) {
+                    header.classList.add('active');
+                    indicator.textContent = currentSort.direction === 'asc' ? '▲' : '▼';
+                }
+            });
+        }
+
         /**
          * Populates the travel history table with a slice of data for the current page.
          */
@@ -390,7 +597,7 @@
             const start = (page - 1) * rowsPerPage;
             const end = start + rowsPerPage;
             const paginatedData = data.slice(start, end);
-    
+
             if (paginatedData.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="9" class="text-center py-2 text-muted">No results found.</td></tr>`;
                 return;
@@ -405,7 +612,7 @@
                     formatDatePH(row.arrivalDate, false), row.purpose,
                     formatDatePH(row.timestamp, true)
                 ];
-    
+
                 const headers = ["Name", "Position", "Division", "Official Station", "Departure Date", "Destination", "Arrival Date", "Purpose", "Submitted On"];
                 
                 rowData.forEach((cellData, index) => {
@@ -413,7 +620,7 @@
                     td.className = "py-2";
                     td.setAttribute('onclick', 'copyToClipboard(this)');
                     td.setAttribute('data-full-text', cellData);
-    
+
                     if (headers[index] === "Destination" || headers[index] === "Purpose") {
                         td.classList.add('description-cell');
                         if (cellData.length > maxTextLength) {
@@ -431,6 +638,7 @@
             
             // Initialize tooltips after populating the table
             const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            // Use spread operator or Array.from to convert NodeList to Array for map compatibility
             const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
             
             // Reapply column visibility after populating the table
@@ -442,7 +650,7 @@
                 toggleColumn(index, false);
             });
         }
-    
+
         /**
          * Copies the full text of a cell to the clipboard.
          */
@@ -460,36 +668,73 @@
                 });
             }
         }
-    
-    
+
+
         /**
-         * Sets up the pagination controls based on the data.
+         * Sets up the pagination controls and updates entry count based on the data.
          */
         function setupPagination(data) {
-            const totalPages = Math.ceil(data.length / rowsPerPage);
+            const totalEntries = data.length;
+            const totalPages = Math.ceil(totalEntries / rowsPerPage);
             const paginationContainer = document.getElementById('pagination-container');
             paginationContainer.innerHTML = '';
-    
+            
+            // Update entry counts
+            const startEntry = (currentPage - 1) * rowsPerPage + 1;
+            const endEntry = Math.min(currentPage * rowsPerPage, totalEntries);
+            document.getElementById('totalEntries').textContent = totalEntries;
+            document.getElementById('startEntry').textContent = startEntry;
+            document.getElementById('endEntry').textContent = endEntry;
+            
+            if (totalPages <= 1) {
+                populateHistoryTable(data, currentPage);
+                return; // No pagination needed
+            }
+
             // Previous Button
             const prevButton = createPaginationButton('Previous', currentPage > 1, () => changePage(currentPage - 1));
             paginationContainer.appendChild(prevButton);
-    
-            // Page Number Buttons
-            for (let i = 1; i <= totalPages; i++) {
+
+            // Page Number Buttons (simple display for now)
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+
+            if (startPage > 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.className = 'btn btn-outline-secondary btn-sm disabled';
+                paginationContainer.appendChild(ellipsis);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
                 const pageButton = createPaginationButton(i, i !== currentPage, () => changePage(i));
                 if (i === currentPage) {
+                    pageButton.classList.remove('btn-outline-secondary');
                     pageButton.classList.add('btn-success');
+                    pageButton.classList.add('active');
                 }
                 paginationContainer.appendChild(pageButton);
             }
-    
+
+            if (endPage < totalPages) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.className = 'btn btn-outline-secondary btn-sm disabled';
+                paginationContainer.appendChild(ellipsis);
+            }
+
             // Next Button
             const nextButton = createPaginationButton('Next', currentPage < totalPages, () => changePage(currentPage + 1));
             paginationContainer.appendChild(nextButton);
-    
+
             populateHistoryTable(data, currentPage);
         }
-    
+
         /**
          * Creates a pagination button with specific text, state, and click handler.
          */
@@ -505,7 +750,7 @@
             }
             return button;
         }
-    
+
         /**
          * Changes the current page of the table.
          */
@@ -526,40 +771,55 @@
                 const orderDate = new Date(order.timestamp);
                 return orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear;
             }).length;
-    
-    
+
+
             document.getElementById('totalOrdersCount').innerText = totalOrders;
             document.getElementById('monthlyOrdersCount').innerText = monthlyOrders;
         }
         
         /**
-         * Filters the travel history table based on the search box input and date filters.
+         * Filters the travel history table based on the search box input (now includes multiple fields).
          */
         function filterHistoryTable() {
             const input = document.getElementById('searchBox');
             const filterText = input.value.toUpperCase();
-    
+
             let currentFilteredData = travelData;
-    
-            // Apply text filter
+
+            // Apply text filter across multiple fields
             if (filterText) {
                 currentFilteredData = currentFilteredData.filter(row => {
-                    return row.name.toUpperCase().includes(filterText);
+                    const searchableFields = [
+                        row.name, 
+                        row.divisionUnit, 
+                        row.destination, 
+                        row.purpose
+                    ];
+                    
+                    return searchableFields.some(field => 
+                        field && String(field).toUpperCase().includes(filterText)
+                    );
                 });
             }
-    
+
+            // Re-sort the filtered data
+            sortData(currentFilteredData, currentSort.column, currentSort.direction);
+
             filteredData = currentFilteredData;
             currentPage = 1;
             setupPagination(filteredData);
         }
-    
+
         /**
          * Formats an ISO date value to Philippine Standard Time (PST).
          */
         function formatDatePH(isoValue, withTime = true) {
             const date = new Date(isoValue);
+            // Get UTC time by adding the timezone offset
             const utc = date.getTime() + date.getTimezoneOffset() * 60000;
-            const ph = new Date(utc + 8 * 60 * 60 * 1000);
+            // Add 8 hours (PST offset)
+            const ph = new Date(utc + 8 * 60 * 60 * 1000); 
+            
             const options = {
                 day: '2-digit', month: '2-digit', year: 'numeric',
                 hour: '2-digit', minute: '2-digit',
@@ -570,11 +830,12 @@
                 delete options.minute;
                 delete options.hour12;
             }
+            // Format to 'MM/DD/YYYY hh:mm AM/PM'
             return ph.toLocaleDateString('en-US', options).replace(',', '');
         }
-    
+
         let hiddenCols = [];
-    
+
         /**
          * Sets up the column visibility toggle checkboxes dynamically.
          */
@@ -588,33 +849,34 @@
             const savedHiddenCols = JSON.parse(localStorage.getItem('hiddenCols') || '[]');
             
             headers.forEach((header, index) => {
-                const columnTitle = header.textContent.trim();
+                const columnTitle = header.textContent.trim().split(' ')[0]; // Use first word of header
                 const checkboxId = `toggle-col-${index}`;
                 
                 // Check if the column is in the saved hidden list
                 const isChecked = !savedHiddenCols.includes(index);
-    
+
                 const li = document.createElement('li');
+                li.className = 'px-3';
                 li.innerHTML = `
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="${checkboxId}" data-column-index="${index}" ${isChecked ? 'checked' : ''}>
-                        <label class="form-check-label" for="${checkboxId}">${columnTitle}</label>
+                        <label class="form-check-label small" for="${checkboxId}">${columnTitle}</label>
                     </div>
                 `;
                 dropdown.appendChild(li);
-    
+
                 document.getElementById(checkboxId).addEventListener('change', (e) => {
                     const columnIndex = parseInt(e.target.getAttribute('data-column-index'));
                     toggleColumn(columnIndex, e.target.checked);
                     updateHiddenCols(columnIndex, e.target.checked);
                 });
             });
-    
+
             // Apply saved column visibility on page load
             hiddenCols = savedHiddenCols;
-            hiddenCols.forEach(index => toggleColumn(index, false));
+            // The logic in populateHistoryTable handles the initial application after table is drawn
         }
-    
+
         function updateHiddenCols(columnIndex, isVisible) {
             if (isVisible) {
                 hiddenCols = hiddenCols.filter(i => i !== columnIndex);
@@ -625,22 +887,25 @@
             }
             localStorage.setItem('hiddenCols', JSON.stringify(hiddenCols));
         }
-    
+
         /**
          * Toggles the visibility of a table column based on index.
          */
         function toggleColumn(columnIndex, isVisible) {
             const table = document.getElementById('historyTable');
             const rows = table.querySelectorAll('tr');
-    
+
             rows.forEach(row => {
-                const cell = row.children[columnIndex];
-                if (cell) {
-                    cell.style.display = isVisible ? '' : 'none';
+                // Ensure we only try to access cells that exist
+                if (row.children.length > columnIndex) {
+                    const cell = row.children[columnIndex];
+                    if (cell) {
+                        cell.style.display = isVisible ? '' : 'none';
+                    }
                 }
             });
         }
-    
+
         /**
          * Creates a bar chart showing travel orders per month.
          */
@@ -656,7 +921,7 @@
                 const monthYear = `${months[month]}-${year}`;
                 monthlyCounts[monthYear] = 0;
             }
-    
+
             // Aggregate data by month
             data.forEach(order => {
                 const orderDate = new Date(order.timestamp);
@@ -667,16 +932,16 @@
                     monthlyCounts[monthYear]++;
                 }
             });
-    
+
             // Prepare data for the chart
             const labels = Object.keys(monthlyCounts).reverse();
             const counts = Object.values(monthlyCounts).reverse();
-    
+
             const ctx = document.getElementById('monthlyChart').getContext('2d');
             if (monthlyChart) {
                 monthlyChart.destroy();
             }
-    
+
             monthlyChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -684,7 +949,7 @@
                     datasets: [{
                         label: 'Number of Travel Orders',
                         data: counts,
-                        backgroundColor: 'rgba(52, 211, 153, 0.5)', // Light green with transparency
+                        backgroundColor: 'rgba(52, 211, 153, 0.5)', 
                         borderColor: '#34d399',
                         borderWidth: 1,
                         borderRadius: 5,
@@ -730,14 +995,14 @@
                 const year = date.getFullYear();
                 uniqueMonths.add(`${month}-${year}`);
             });
-    
+
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             
             // Clear previous options except "All Months"
             while (monthFilter.options.length > 1) {
                 monthFilter.remove(1);
             }
-    
+
             Array.from(uniqueMonths).sort((a,b) => {
                 const [aMonth, aYear] = a.split('-').map(Number);
                 const [bMonth, bYear] = b.split('-').map(Number);
@@ -750,14 +1015,14 @@
                 monthFilter.appendChild(option);
             });
         }
-    
+
         /**
          * Creates a bar chart showing travel orders by division.
          */
         function createDivisionChart() {
             const selectedMonth = document.getElementById('monthFilter').value;
             let dataToChart = travelData;
-    
+
             if (selectedMonth !== 'all') {
                 const [monthIndex, year] = selectedMonth.split('-').map(Number);
                 dataToChart = travelData.filter(order => {
@@ -765,20 +1030,23 @@
                     return orderDate.getMonth() === monthIndex && orderDate.getFullYear() === year;
                 });
             }
-    
+
             const divisionCounts = dataToChart.reduce((acc, order) => {
                 acc[order.divisionUnit] = (acc[order.divisionUnit] || 0) + 1;
                 return acc;
             }, {});
-    
-            const labels = Object.keys(divisionCounts);
-            const counts = Object.values(divisionCounts);
-    
+
+            // Sort divisions by count (descending)
+            const sortedEntries = Object.entries(divisionCounts).sort(([, a], [, b]) => b - a);
+            const labels = sortedEntries.map(([label]) => label);
+            const counts = sortedEntries.map(([, count]) => count);
+
+
             const ctx = document.getElementById('divisionChart').getContext('2d');
             if (divisionChart) {
                 divisionChart.destroy();
             }
-    
+
             divisionChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -786,7 +1054,7 @@
                     datasets: [{
                         label: 'Number of Travel Orders',
                         data: counts,
-                        backgroundColor: 'rgba(6, 78, 59, 0.7)', // A darker green
+                        backgroundColor: 'rgba(6, 78, 59, 0.7)', 
                         borderColor: '#064e3b',
                         borderWidth: 1,
                         borderRadius: 5,
@@ -820,13 +1088,72 @@
                 }
             });
         }
-    
-        // Event listener for sidebar toggle
+
+        /**
+         * Event listener for sidebar toggle (Modified for mobile behavior)
+         */
         function toggleSidebar() {
-            const wrapper = document.querySelector('.wrapper');
-            wrapper.classList.toggle('sidebar-hidden');
+            const wrapper = document.getElementById('main-content');
+            const isHidden = wrapper.classList.contains('sidebar-hidden');
+            
+            if (window.innerWidth <= 768) {
+                 // On mobile, force show/hide the sidebar and prevent scroll when open
+                if (isHidden) {
+                    wrapper.classList.remove('sidebar-hidden');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    wrapper.classList.add('sidebar-hidden');
+                    document.body.style.overflow = '';
+                }
+            } else {
+                 // On desktop, simply toggle the class
+                wrapper.classList.toggle('sidebar-hidden');
+            }
         }
-    
+
+        // Set initial sidebar state for mobile (hidden by default)
+        function checkInitialSidebarState() {
+            const wrapper = document.getElementById('main-content');
+            if (window.innerWidth <= 768) {
+                // On small screens, hide the sidebar by default unless the class is already present
+                if (!wrapper.classList.contains('sidebar-hidden')) {
+                    wrapper.classList.add('sidebar-hidden');
+                }
+                document.body.style.overflow = '';
+            } else {
+                // On large screens, ensure scroll is enabled and show sidebar by default
+                wrapper.classList.remove('sidebar-hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        /**
+         * Handles section navigation (simple scroll)
+         */
+        function setupNavigation() {
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+
+                    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    
+                    // On mobile, close sidebar after clicking a link
+                    if (window.innerWidth <= 768) {
+                        document.getElementById('main-content').classList.add('sidebar-hidden');
+                        document.body.style.overflow = '';
+                    }
+                });
+            });
+        }
+
+
         // Event listener for when the DOM content is loaded.
         window.addEventListener('DOMContentLoaded', () => {
             const splashScreen = document.getElementById('splash-screen');
@@ -836,9 +1163,11 @@
                 splashScreen.classList.add('hidden');
                 mainContent.classList.add('visible');
             }, 2000); // 2-second splash screen
-    
+
             // Initialize lucide icons and load data
             lucide.createIcons();
+            checkInitialSidebarState(); // Check sidebar state on load
+            setupNavigation();
             loadDashboardData();
             
             const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
@@ -846,6 +1175,9 @@
                 sidebarToggleBtn.addEventListener('click', toggleSidebar);
             }
         });
+
+        // Handle resizing for responsiveness
+        window.addEventListener('resize', checkInitialSidebarState);
     </script>
 </body>
 </html>
