@@ -325,6 +325,7 @@
   </div>
 
   <div class="list-group list-group-flush mt-2">
+
       <a class="list-group-item active" href="#create-new-travel-order">
           <i data-lucide="file-text" class="me-2"></i> Create New TO
       </a>
@@ -333,6 +334,10 @@
       </a>
       <a class="list-group-item" href="javascript:void(0)" onclick="document.getElementById('travelForm').reset()">
           <i data-lucide="refresh-cw" class="me-2"></i> Reset Form
+      </a>
+
+        <a class="list-group-item" href="pid.html">
+          <i data-lucide="search" class="me-2"></i> PRN Decoder
       </a>
   </div>
 </div>
@@ -528,7 +533,7 @@
                                     <option value="JENNIFER O. DAMANSE, RPF">JENNIFER O. DAMANSE, RPF</option>
                                     <option value="JUNE M. LAZARO, RPF">JUNE M. LAZARO, RPF</option>
                                     <option value="SUSAN D. PICO">SUSAN D. PICO</option>
-                                    <option value="FLORIDA BLANCA S. OCAMPO">FLORIDA BLANCA S. OCAMPO, RPF</option>
+                                    <option value="FLORIDA BLANCA S. OCAMPO, RPF">FLORIDA BLANCA S. OCAMPO, RPF</option>
                                     <option value="">NONE</option>
                                   </select>
                                 </div>
@@ -918,14 +923,35 @@ function previewFromHistory(index) {
 
                     
 function generatePreview(showSubmitButton = true, showPrintButton = false, record = null) {
-    // If opened from history, use the record; otherwise, collect form inputs
+    // ----------------------
+    // Utility: PH Date Formatter
+    // ----------------------
+    const formatPHDate = (isoStr) => {
+        try {
+            const d = new Date(isoStr);
+            return d.toLocaleDateString('en-PH', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                timeZone: 'Asia/Manila'
+            });
+        } catch {
+            return isoStr || '';
+        }
+    };
+
+    // ----------------------
+    // Collect Data
+    // ----------------------
+    window.lastPreviewRecord = record; // for printPreview
+
     const data = record || {
         name: document.getElementById('name').value,
         position: document.getElementById('position').value,
         divisionUnit: document.getElementById('divisionUnit').value,
         officialStation: document.getElementById('officialStation').value,
-        departureDate: formatDate(document.getElementById('departureDate').value),
-        arrivalDate: formatDate(document.getElementById('arrivalDate').value),
+        departureDate: document.getElementById('departureDate').value,
+        arrivalDate: document.getElementById('arrivalDate').value,
         destination: document.getElementById('destination').value,
         purpose: document.getElementById('purpose').value,
         fundAppropriation: document.getElementById('fundAppropriation').value,
@@ -933,116 +959,99 @@ function generatePreview(showSubmitButton = true, showPrintButton = false, recor
         recommendingApproval: document.getElementById('recommendingApproval').value,
         approved: document.getElementById('approved').value
     };
-    // ✅ Fix ISO date format (from history record)
-if (record) {
-    const fixDate = (d) => {
+
+    // Uppercase names for official forms
+    data.name = data.name.toUpperCase();
+    data.recommendingApproval = data.recommendingApproval?.toUpperCase() || '';
+    data.approved = data.approved.toUpperCase();
+
+    // Fix historical record dates
+    if (record) {
+        data.departureDate = formatPHDate(record.departureDate);
+        data.arrivalDate = formatPHDate(record.arrivalDate);
+    } else {
+        data.departureDate = formatPHDate(data.departureDate);
+        data.arrivalDate = formatPHDate(data.arrivalDate);
+    }
+
+    // ----------------------
+    // Timestamp Handling
+    // ----------------------
+    let timestamp = 'Pending';
+    if (record) {
+        const key = Object.keys(record).find(k => k.toLowerCase().includes('time'));
+        if (key && record[key]) timestamp = record[key];
+    }
+    if (timestamp !== 'Pending') {
         try {
-            const dateObj = new Date(d);
-            return dateObj.toLocaleDateString('en-PH', {
+            timestamp = new Intl.DateTimeFormat('en-PH', {
+                day: '2-digit',
+                month: '2-digit',
                 year: 'numeric',
-                month: 'long',
-                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
                 timeZone: 'Asia/Manila'
-            });
+            }).format(new Date(timestamp));
         } catch {
-            return d;
+            timestamp = 'Pending';
         }
-    };
-    data.departureDate = fixDate(record.departureDate);
-    data.arrivalDate = fixDate(record.arrivalDate);
-}
-
-
-    // ✅ Get timestamp from table record (handle various key names)
-// ✅ Ensure timestamp is correctly displayed for both new and historical records
-// ✅ Smart Timestamp Extractor
-// ✅ Get timestamp directly from Google Sheet data
-let timestamp = 'Pending';
-if (record) {
-    // Use your actual sheet column name (case-insensitive)
-    const possibleKeys = Object.keys(record);
-    const key = possibleKeys.find(k => k.toLowerCase().includes('time'));
-    if (key && record[key]) timestamp = record[key];
-}
-
-// ✅ Format timestamp in PH time
-if (timestamp && timestamp !== 'Pending') {
-    try {
-        const dateObj = new Date(timestamp);
-        timestamp = new Intl.DateTimeFormat('en-PH', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true,
-            timeZone: 'Asia/Manila'
-        }).format(dateObj);
-    } catch {
-        timestamp = 'Pending';
     }
-}
+        const printedNow = new Intl.DateTimeFormat('en-PH', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+    hour12: true,
+    timeZone: 'Asia/Manila'
+}).format(new Date());
+
+    // ----------------------
+    // QR Code
+    // ----------------------
+    const qrText = `${data.name} | Destination - ${data.destination} | Departure - ${data.departureDate} | Arrival - ${data.arrivalDate} | Submitted Timestamp - ${timestamp} | Printed Timestamp - ${printedNow}`; 
+    const qrURL = `https://quickchart.io/qr?text=${encodeURIComponent(qrText)}&size=170&margin=2`;
+
+    // ----------------------
+    // Recommending Approval Logic
+    // ----------------------
+    const showRecommendingApproval = data.recommendingApproval && data.recommendingApproval !== 'NONE';
+    const recommendingApprovalHTML = showRecommendingApproval ? `<td><strong>RECOMMENDING APPROVAL</strong></td>` : '';
+    const recommendingApprovalNameHTML = showRecommendingApproval ? `<td style="padding-top: 18px;"><strong><u>${data.recommendingApproval}</u></strong></td>` : '';
+    const recommendingApprovalPositionHTML = showRecommendingApproval ? `<td>Section/Unit Head</td>` : '';
 
 
-
-    // ✅ Generate QR code text and image
-   // ✅ Convert ISO date strings to readable date (no time)
-const formatToReadableDate = (isoStr) => {
-    try {
-        const d = new Date(isoStr);
-        return d.toLocaleDateString('en-PH', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            timeZone: 'Asia/Manila'
-        });
-    } catch {
-        return isoStr;
-    }
-};
-
-// ✅ Use formatted dates for QR text
-const qrText = `${data.name} | Destination - ${data.destination} | Departure - ${formatToReadableDate(data.departureDate)} | Arrival - ${formatToReadableDate(data.arrivalDate)} | Timestamp - ${timestamp}`;
-const qrURL = `https://quickchart.io/qr?text=${encodeURIComponent(qrText)}&size=170&margin=2`;
-
-    const isRecommendingApprovalNeeded =
-        data.recommendingApproval && data.recommendingApproval.trim() !== '' &&
-        data.recommendingApproval.toUpperCase() !== 'NONE';
-
-    const recommendingApprovalHTML = isRecommendingApprovalNeeded
-        ? `<td><strong>RECOMMENDING APPROVAL</strong></td>` : '';
-    const recommendingApprovalNameHTML = isRecommendingApprovalNeeded
-        ? `<td style="padding-top: 18px;"><u>${data.recommendingApproval}</u></td>` : '';
-    const recommendingApprovalPositionHTML = isRecommendingApprovalNeeded
-        ? `<td>Section/Division/Unit Head</td>` : '';
-
-    // === TRAVEL ORDER PREVIEW HTML ===
+    // ----------------------
+    // Generate Preview HTML
+    // ----------------------
     const previewHTML = `
     <div style="font-family: Arial, sans-serif; font-size: 10px; color: #000; padding: 30px;">
-        <table style="width: 100%; margin-bottom: 8px;">
-            <tr>
-                <td style="width: 80px;">
-                    <img src="assets/denrlogo.png" alt="DENR Logo" style="height: 70px;" />
-                </td>
-                <td style="text-align: left; font-size: 11px; line-height: 1.2;">
-                    <div><strong>Republic of the Philippines</strong></div>
-                    <div><strong>Department of Environment and Natural Resources</strong></div>
-                    <div><strong>Community Environment and Natural Resources Office</strong></div>
-                    <div>Province of Quirino</div>
-                    <div>Andres Bonifacio, Diffun, Quirino, 3401</div>
-                    <div>Email Address: denr.diffun@gmail.com</div>
-                </td>
-            </tr>
-        </table>
+        <!-- HEADER -->
+<table style="width: 100%; margin-bottom: 8px; border-collapse: collapse;">
+    <tr>
+        <td style="width: 90px; padding: 0;">
+            <img src="assets/logo1.png" alt="DENR Logo" style="height: 90px;" />
+        </td>
+        <td style="width: 90px; padding: 0;">
+            <img src="assets/BP1.png" alt="BP1 Logo" style="height: 90px;" />
+        </td>
+        <td style="padding-left: 8px; vertical-align: top; text-align: left; font-size: 11px; line-height: 1.2;">
+            <div><strong>REPUBLIC OF THE PHILIPPINES</strong></div>
+            <div><strong>DEPARTMENT OF ENVIRONMENT AND NATURAL RESOURCES</strong></div>
+            <div><strong>COMMUNITY ENVIRONMENT AND NATURAL RESOURCES OFFICE</strong></div>
+            <div>Province of Quirino</div>
+            <div>Andres Bonifacio, Diffun, Quirino, 3401</div>
+            <div>Email: denr.diffun@gmail.com</div>
+        </td>
+    </tr>
+</table>
 
-        <h4 style="text-align: center; text-decoration: underline; font-weight: bold; font-size: 12px; margin: 16px 0;">TRAVEL ORDER</h4>
+        <h4 style="text-align: center; text-decoration: underline; font-weight: bold; font-size: 16px; margin: 16px 0;">TRAVEL ORDER</h2>
         <div style="text-align: center; margin-bottom: 8px;">(No. ______________________)</div>
 
         <table style="width: 100%; margin-bottom: 8px; font-size: 10px;">
-            <tr><td><strong>Name:</strong> ${data.name}</td><td><strong>Salary:</strong></td></tr>
+            <tr><td><strong>Name:</strong><strong> ${data.name}</strong></td><td><strong>Salary:</strong></td></tr>
             <tr><td><strong>Position:</strong> ${data.position}</td><td><strong>Div/Sec/Unit:</strong> ${data.divisionUnit}</td></tr>
-            <tr><td><strong>Departure Date:</strong> ${data.departureDate}</td><td><strong>Official Station:</strong> ${data.officialStation}</td></tr>
-            <tr><td><strong>Destination:</strong> ${data.destination}</td><td><strong>Arrival Date:</strong> ${data.arrivalDate}</td></tr>
+            <tr><td><strong>Departure Date:</strong><strong> ${data.departureDate}</strong></td><td><strong>Official Station:</strong> ${data.officialStation}</td></tr>
+            <tr><td><strong>Destination:</strong> ${data.destination}</td><td><strong>Arrival Date:</strong><strong> ${data.arrivalDate}</strong></td></tr>
         </table>
 
         <p style="margin: 8px 0;"><strong>Purpose:</strong><br>${data.purpose}</p>
@@ -1055,7 +1064,7 @@ const qrURL = `https://quickchart.io/qr?text=${encodeURIComponent(qrText)}&size=
 
         <table style="width: 100%; margin-top: 0px; text-align: center; font-size: 10px;">
             <tr>${recommendingApprovalHTML}<td><strong>APPROVED BY</strong></td></tr>
-            <tr>${recommendingApprovalNameHTML}<td style="padding-top: 18px;"><u>${data.approved}</u></td></tr>
+            <tr>${recommendingApprovalNameHTML}<td style="padding-top: 18px;"><strong><u>${data.approved}</u></strong></td></tr>
             <tr>${recommendingApprovalPositionHTML}<td>OIC, CENR Officer</td></tr>
         </table>
 
@@ -1068,19 +1077,18 @@ const qrURL = `https://quickchart.io/qr?text=${encodeURIComponent(qrText)}&size=
         </p>
 
         <table style="width: 100%; margin-top: 0px; text-align: right; font-size: 10px;">
-            <tr><td><u>${data.name}</u></td></tr>
-            <tr><td><strong>Official/Employee</strong></td></tr>
+            <tr><td><strong><u>${data.name}</u></strong></td></tr>
+            <tr><td>Official/Employee</td></tr>
         </table>
 
         <div style="text-align: center; font-weight: bold; font-size: 12px; margin-top: 16px;">CERTIFICATE OF APPEARANCE</div>
         <p style="text-align: justify; font-size: 10px; margin-top: 8px;">
-            THIS IS TO CERTIFY that <u>${data.name}</u> personally appeared on the date and place indicated below:
+            THIS IS TO CERTIFY that <strong><u>${data.name}</u></strong> personally appeared on the date and place indicated below:
         </p>
         <p style="text-align: justify; font-size: 10px; margin-top: 8px;">
-            This certification is issued upon request of Mr./Ms. <u>${data.name}</u> in compliance with standard auditing regulations provided for under <strong>Republic Act No. 3347</strong>, duly implemented by <strong>COA Circular No. 68-A</strong>.
+            This certification is issued upon request of Mr./Ms. <strong><u>${data.name}</u></strong> in compliance with standard auditing regulations provided for under <strong>Republic Act No. 3347</strong>, duly implemented by <strong>COA Circular No. 68-A</strong>.
         </p>
 
-        <!-- ✅ FIXED TABLE STRUCTURE -->
         <table style="width: 100%; border: 1px solid #000; border-collapse: collapse; margin-top: 8px; font-size: 10px;">
             <thead>
                 <tr>
@@ -1104,29 +1112,21 @@ const qrURL = `https://quickchart.io/qr?text=${encodeURIComponent(qrText)}&size=
             </tbody>
         </table>
 
-        <!-- QR Code Section -->
         <div style="text-align: right; margin-top: 20px;">
-            <img src="${qrURL}" alt="QR Code" style="width: 160px; height: 160px; border: 1px solid #ccc; padding: 3px; background: #fff;">
+            <img src="${qrURL}" alt="QR Code" style="width: 170px; height: 170px; border: 1px solid #ccc; padding: 3px; background: #fff;">
             <div style="font-size: 9px; color: #333;">Scan to verify details</div>
         </div>
 
-        <!-- Footer Note -->
-        <div style="
-            margin-top: 10px;
-            padding: 6px 8px;
-            text-align: center;
-            font-size: 9px;
-            font-weight: bold;
-            color: #2e7d32;
-            border-top: 1.5px solid #2e7d32;
-            background: #edf7ee;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-        ">
-            🌿 This Travel Order Document is System Generated using CENRO-DIFFUN Travel Order Generator System 🌿
+        <!-- Optional Buttons -->
+        <div style="margin-top: 12px; text-align: center;">
+            ${showSubmitButton ? `<button onclick="submitForm()">Submit</button>` : ''}
         </div>
     </div>
     `;
+
+    // Inject preview HTML into container
+    document.getElementById('printablePreview').innerHTML = previewHTML;
+
 
     // === Footer Buttons ===
     let footerButtons = '';
@@ -1152,42 +1152,232 @@ const qrURL = `https://quickchart.io/qr?text=${encodeURIComponent(qrText)}&size=
     
 function printPreview() {
     const content = document.getElementById('printablePreview').innerHTML;
+
+    // -------------------------------------------------
+    // Generate Date & Time Printed (PH Time)
+    // -------------------------------------------------
+    const printedNow = new Intl.DateTimeFormat('en-PH', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+        hour12: true,
+        timeZone: 'Asia/Manila'
+    }).format(new Date());
+
+    // -------------------------------------------------
+    // Extract Date Submitted
+    // -------------------------------------------------
+    let submitted = 'Pending';
+    const record = window.lastPreviewRecord;
+    if (record) {
+        const key = Object.keys(record).find(k => k.toLowerCase().includes("time"));
+        if (key && record[key]) {
+            try {
+                submitted = new Intl.DateTimeFormat('en-PH', {
+                    day: '2-digit', month: '2-digit', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit',
+                    hour12: true,
+                    timeZone: 'Asia/Manila'
+                }).format(new Date(record[key]));
+            } catch { }
+        }
+    }
+
+    // -------------------------------------------------
+    // Generate Print Tracking ID
+    // -------------------------------------------------
+    const printID = `PRN-${Date.now().toString(36).toUpperCase()}`;
+
+    // -------------------------------------------------
+    // Open Print Window
+    // -------------------------------------------------
     const printWindow = window.open('', '', 'width=800,height=1000');
     printWindow.document.write(`
         <html>
-            <head>
-                <title>Print Travel Order</title>
-                <style>
-                    @page {
-                        size: A4 portrait;
-                        margin: 0;
-                    }
-                    body {
-                        font-family: 'Poppins', sans-serif;
-                        margin: 0.5in; /* ✅ Matches @page margins visually in browser preview */
-                        color: #000;
-                        font-size: 14px;
-                    }
-                    table {
-                        width: 100%;
-                        border-collapse: collapse;
-                    }
-                    td, th {
-                        padding: 5px;
-                        vertical-align: top;
-                    }
-                    th {
-                        text-align: center;
-                    }
-                </style>
-            </head>
-            <body onload="window.print(); window.close();">
-                ${content}
-            </body>
+        <head>
+            <title>Print Travel Order</title>
+            <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
+            <style>
+                @page { size: A4 portrait; margin: 0; }
+                body {
+                    font-family: 'Poppins', sans-serif;
+                    margin: .5in;
+                    font-size: 14px;
+                    color: #000;
+                    position: relative;
+                }
+
+                /* ============================
+                   Watermark (Full Page)
+                ============================ */
+                .watermark {
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%) rotate(-30deg) scale(1.2);
+                    width: 200%;
+                    height: 200%;
+                    text-align: center;
+                    pointer-events: none;
+                    z-index: -1;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .watermark-logo {
+                    max-width: 40vw;
+                    max-height: 25vh;
+                    opacity: 0.05;
+                    margin-bottom: 1em;
+                }
+                .watermark-text {
+                    font-weight: bold;
+                    color: rgba(0,0,0,0.08);
+                    white-space: nowrap;
+                }
+                .print-id { font-size: 8vw; margin-bottom: 0.3em; }
+                .print-time { font-size: 5vw; }
+
+                /* ============================
+                   Border Frame
+                ============================ */
+                .border-frame {
+                    position: fixed;
+                    top: 0.25in; left: 0.25in; right: 0.25in; bottom: 0.25in;
+                    border: 2px dashed rgba(0,0,0,0.4);
+                    pointer-events: none;
+                    z-index: 10;
+                }
+                .border-frame::before,
+                .border-frame::after {
+                    content: "DENR-CENRO DIFFUN";
+                    position: absolute;
+                    font-size: 14px;
+                    color: rgba(0,0,0,0.7);
+                    font-weight: bold;
+                    background: #fff;
+                    padding: 2px 6px;
+                }
+                .border-frame::before { top: -0.7em; left: 50%; transform: translateX(-50%); }
+                .border-frame::after { bottom: -0.7em; left: 50%; transform: translateX(-50%); }
+
+                /* ============================
+                   Guilloché Seal (DENR Colors)
+                ============================ */
+                .guilloche-seal {
+                    position: fixed;
+                    top: 1in;
+                    right: .5in;
+                    width: 130px;
+                    height: 130px;
+                    pointer-events: none;
+                    z-index: 20;
+                }
+                .guilloche-inner-text {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    font-size: 10px;
+                    font-weight: bold;
+                    text-align: center;
+                    color: rgba(0,0,0,0.75);
+                    letter-spacing: 0.6px;
+                }
+
+                /* ============================
+                   UV Hidden Footer Text
+                ============================ */
+                .uv-text {
+                    color: rgba(255, 255, 0, 0.03);
+                    font-size: 10px;
+                    letter-spacing: 2px;
+                    text-align: center;
+                    position: absolute;
+                    bottom: 0.5in;
+                    width: 100%;
+                }
+
+                /* ============================
+                   Meta Box
+                ============================ */
+                .meta-box {
+                    border: 1px solid #000;
+                    padding: 6px;
+                    font-size: 11px;
+                    width: 50%;
+                    position: fixed;
+                    bottom: 1.2in;
+                    left: .7in;
+                    background: rgba(255,255,255,0.95);
+                    z-index: 30;
+                }
+
+                /* ============================
+                   Footer
+                ============================ */
+                .print-footer {
+                    position: fixed;
+                    bottom: 0.4in;
+                    left: 0;
+                    width: 100%;
+                    text-align: center;
+                    font-size: 10px;
+                    color: rgba(0,0,0,0.7);
+                    z-index: 30;
+                    font-style: italic;
+                }
+
+                table { border-collapse: collapse; width: 100%; }
+                td, th { padding: 5px; vertical-align: top; }
+            </style>
+        </head>
+
+        <body onload="window.print(); window.close();">
+
+            <!-- Border -->
+            <div class="border-frame"></div>
+
+            <!-- Watermark -->
+            <div class="watermark">
+                <img src="assets/denrblack1.png" class="watermark-logo" />
+                <div class="watermark-text">
+                    <div class="print-id">${printID}</div>
+                    <div class="print-time">${printedNow}</div>
+                </div>
+            </div>
+
+            <!-- Guilloché Seal (DENR Colors) -->
+            <div class="guilloche-seal">
+                <div class="guilloche-inner-text">${printID}</div>
+            </div>
+
+            ${content}
+
+            <!-- Metadata -->
+            <div class="meta-box">
+                <strong>Date & Time Encoded:</strong> ${submitted}<br>
+                <strong>Date & Time Printed:</strong> ${printedNow}<br>
+                <strong>Print Tracking ID:</strong> ${printID}
+            </div>
+
+            <!-- Footer -->
+            <div class="print-footer">
+                🌿 This Travel Order Document is System Generated using CENRO-DIFFUN Travel Order Generator System 🌿
+            </div>
+
+            <div class="uv-text">
+                AUTHENTIC GOVERNMENT DOCUMENT – CENRO DIFFUN – DENR – ${printID}
+            </div>
+
+        </body>
         </html>
     `);
+
     printWindow.document.close();
 }
+
+
 
     
     async function submitFromPreview() {
